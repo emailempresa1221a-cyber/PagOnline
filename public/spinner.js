@@ -1,6 +1,7 @@
 /**
  * Script Final para Carregar Produtos no Resumo do Pedido
  * Funciona em Desktop e Mobile com detecção melhorada
+ * VERSÃO CORRIGIDA: Melhor tratamento de caminhos customizados e localStorage
  */
 
 (function() {
@@ -10,28 +11,84 @@
     const CONFIG = {
         storageKey: 'carrinho_produtos',
         maxRetries: 5,
-        retryDelay: 500
+        retryDelay: 500,
+        debugMode: true // Ativar logs detalhados
     };
+
+    // Função para debug
+    function debug(message, data = null) {
+        if (CONFIG.debugMode) {
+            if (data) {
+                console.log(`📦 ${message}`, data);
+            } else {
+                console.log(`📦 ${message}`);
+            }
+        }
+    }
+
+    /**
+     * Função para verificar localStorage com fallback
+     */
+    function obterProdutosDoStorage() {
+        try {
+            // Tentar localStorage primeiro
+            let produtosJSON = localStorage.getItem(CONFIG.storageKey);
+            
+            if (produtosJSON) {
+                debug('Produtos encontrados em localStorage');
+                return produtosJSON;
+            }
+
+            // Fallback: tentar sessionStorage
+            produtosJSON = sessionStorage.getItem(CONFIG.storageKey);
+            if (produtosJSON) {
+                debug('Produtos encontrados em sessionStorage (fallback)');
+                return produtosJSON;
+            }
+
+            // Fallback: tentar com chave alternativa
+            produtosJSON = localStorage.getItem('carrinho');
+            if (produtosJSON) {
+                debug('Produtos encontrados em chave alternativa "carrinho"');
+                return produtosJSON;
+            }
+
+            debug('⚠️ Nenhum produto encontrado em nenhum storage');
+            return null;
+
+        } catch (error) {
+            console.error('❌ Erro ao acessar storage:', error);
+            return null;
+        }
+    }
 
     // Função principal para carregar produtos
     function carregarProdutos() {
         try {
+            debug('Iniciando carregamento de produtos...');
+
             // 1. Obter dados do localStorage
-            const produtosJSON = localStorage.getItem(CONFIG.storageKey);
+            const produtosJSON = obterProdutosDoStorage();
             
             if (!produtosJSON) {
-                console.warn('⚠️ Nenhum produto encontrado em localStorage');
+                console.warn('⚠️ Nenhum produto encontrado em storage');
                 return false;
             }
 
-            const produtos = JSON.parse(produtosJSON);
+            let produtos;
+            try {
+                produtos = JSON.parse(produtosJSON);
+            } catch (e) {
+                console.error('❌ Erro ao fazer parse do JSON:', e);
+                return false;
+            }
             
             if (!Array.isArray(produtos) || produtos.length === 0) {
                 console.warn('⚠️ Array de produtos vazio ou inválido');
                 return false;
             }
 
-            console.log('✅ Produtos carregados:', produtos);
+            debug('✅ Produtos carregados:', produtos);
 
             // 2. Injetar CSS
             injetarCSS();
@@ -40,24 +97,24 @@
             const containerDesktop = encontrarContainerDesktop();
             if (containerDesktop) {
                 criarElementosProdutos(produtos, containerDesktop, 'desktop');
-                console.log('✅ Produtos inseridos no DESKTOP');
+                debug('✅ Produtos inseridos no DESKTOP');
             } else {
-                console.warn('⚠️ Container desktop não encontrado');
+                debug('⚠️ Container desktop não encontrado');
             }
 
             // 4. Inserir produtos no MOBILE
             const containerMobile = encontrarContainerMobile();
             if (containerMobile) {
                 criarElementosProdutos(produtos, containerMobile, 'mobile');
-                console.log('✅ Produtos inseridos no MOBILE');
+                debug('✅ Produtos inseridos no MOBILE');
             } else {
-                console.warn('⚠️ Container mobile não encontrado');
+                debug('⚠️ Container mobile não encontrado');
             }
 
             // 5. Atualizar totais
             atualizarTotais(produtos);
 
-            console.log('✅ Produtos exibidos com sucesso!');
+            debug('✅ Produtos exibidos com sucesso!');
             return true;
 
         } catch (error) {
@@ -71,7 +128,7 @@
         // Tentar encontrar container existente
         let container = document.getElementById('productsListDesktop');
         if (container) {
-            console.log('✅ Container desktop existente encontrado');
+            debug('✅ Container desktop existente encontrado');
             return container;
         }
 
@@ -92,7 +149,7 @@
                 divisor.style.cssText = 'border-top: 1px solid #e5e7eb; margin: 16px 0;';
                 container.insertAdjacentElement('afterend', divisor);
                 
-                console.log('✅ Container desktop criado após título da sidebar');
+                debug('✅ Container desktop criado após título da sidebar');
                 return container;
             }
         }
@@ -100,12 +157,12 @@
         return null;
     }
 
-    // Função para encontrar container no MOBILE - VERSÃO CORRIGIDA
+    // Função para encontrar container no MOBILE
     function encontrarContainerMobile() {
         // Tentar encontrar container existente
         let container = document.getElementById('productsListMobile');
         if (container) {
-            console.log('✅ Container mobile existente encontrado');
+            debug('✅ Container mobile existente encontrado');
             return container;
         }
 
@@ -113,7 +170,7 @@
         const orderSummaryMobile = document.querySelector('.order-summary-mobile');
         
         if (!orderSummaryMobile) {
-            console.warn('⚠️ .order-summary-mobile não encontrado');
+            debug('⚠️ .order-summary-mobile não encontrado');
             return null;
         }
 
@@ -121,7 +178,7 @@
         const summaryContent = orderSummaryMobile.querySelector('#summaryContent');
         
         if (!summaryContent) {
-            console.warn('⚠️ #summaryContent não encontrado');
+            debug('⚠️ #summaryContent não encontrado');
             return null;
         }
 
@@ -129,7 +186,7 @@
         const orderTotalsMobile = summaryContent.querySelector('.order-totals');
         
         if (!orderTotalsMobile) {
-            console.warn('⚠️ .order-totals dentro de #summaryContent não encontrado');
+            debug('⚠️ .order-totals dentro de #summaryContent não encontrado');
             return null;
         }
 
@@ -146,7 +203,7 @@
         divisor.style.cssText = 'border-top: 1px solid #e5e7eb; margin: 16px 0;';
         container.insertAdjacentElement('afterend', divisor);
         
-        console.log('✅ Container mobile criado antes dos totais');
+        debug('✅ Container mobile criado antes dos totais');
         return container;
     }
 
@@ -195,7 +252,7 @@
                 `;
 
                 container.appendChild(produtoDiv);
-                console.log(`✅ Produto ${index + 1} adicionado (${tipo}): ${nome}`);
+                debug(`✅ Produto ${index + 1} adicionado (${tipo}): ${nome}`);
 
             } catch (error) {
                 console.error(`❌ Erro ao processar produto ${index}:`, error);
@@ -307,7 +364,7 @@
         `;
 
         document.head.appendChild(style);
-        console.log('✅ CSS injetado com sucesso');
+        debug('✅ CSS injetado com sucesso');
     }
 
     // Função para atualizar totais
@@ -331,11 +388,11 @@
                 const priceSpan = subtotalElementsDesktop[0].querySelector('span:last-child');
                 if (priceSpan && priceSpan.textContent === '...') {
                     priceSpan.textContent = subtotalFormatado;
-                    console.log('✅ Subtotal desktop atualizado:', subtotalFormatado);
+                    debug('✅ Subtotal desktop atualizado:', subtotalFormatado);
                 }
             }
 
-            // Atualizar subtotal no MOBILE - VERSÃO CORRIGIDA
+            // Atualizar subtotal no MOBILE
             const summaryContent = document.querySelector('.order-summary-mobile #summaryContent');
             if (summaryContent) {
                 const subtotalElementsMobile = summaryContent.querySelectorAll('.order-totals .total-row');
@@ -343,7 +400,7 @@
                     const priceSpan = subtotalElementsMobile[0].querySelector('span:last-child');
                     if (priceSpan && priceSpan.textContent === '...') {
                         priceSpan.textContent = subtotalFormatado;
-                        console.log('✅ Subtotal mobile atualizado:', subtotalFormatado);
+                        debug('✅ Subtotal mobile atualizado:', subtotalFormatado);
                     }
                 }
             }
@@ -385,7 +442,7 @@
                 }
             });
 
-            // Atualizar total no mobile - VERSÃO CORRIGIDA
+            // Atualizar total no mobile
             const summaryContent = document.querySelector('.order-summary-mobile #summaryContent');
             if (summaryContent) {
                 const totalElementsMobile = summaryContent.querySelectorAll('.order-totals .total-row.final');
@@ -403,7 +460,7 @@
                 mobileTotalPrice.textContent = totalFormatado;
             }
 
-            console.log('✅ Total atualizado:', totalFormatado);
+            debug('✅ Total atualizado:', totalFormatado);
 
         } catch (error) {
             console.error('❌ Erro ao atualizar total final:', error);
@@ -429,7 +486,7 @@
         }
 
         // Tentar novamente
-        console.log(`⏳ Tentativa ${tentativa + 1}/${CONFIG.maxRetries}...`);
+        debug(`⏳ Tentativa ${tentativa + 1}/${CONFIG.maxRetries}...`);
         setTimeout(() => {
             carregarComRetry(tentativa + 1);
         }, CONFIG.retryDelay);
@@ -438,11 +495,11 @@
     // Inicializar quando o DOM estiver pronto
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('📦 Iniciando carregamento de produtos (Desktop + Mobile)...');
+            debug('Iniciando carregamento de produtos (Desktop + Mobile)...');
             carregarComRetry();
         });
     } else {
-        console.log('📦 Iniciando carregamento de produtos (Desktop + Mobile)...');
+        debug('Iniciando carregamento de produtos (Desktop + Mobile)...');
         carregarComRetry();
     }
 
@@ -452,13 +509,17 @@
             option.addEventListener('click', function() {
                 const produtosJSON = localStorage.getItem(CONFIG.storageKey);
                 if (produtosJSON) {
-                    const produtos = JSON.parse(produtosJSON);
-                    const subtotal = produtos.reduce((total, produto) => {
-                        const preco = parseFloat(produto.preco || produto.price || 0);
-                        const quantidade = parseInt(produto.quantidade || produto.quantity || 1);
-                        return total + (preco * quantidade);
-                    }, 0);
-                    atualizarTotalFinal(subtotal);
+                    try {
+                        const produtos = JSON.parse(produtosJSON);
+                        const subtotal = produtos.reduce((total, produto) => {
+                            const preco = parseFloat(produto.preco || produto.price || 0);
+                            const quantidade = parseInt(produto.quantidade || produto.quantity || 1);
+                            return total + (preco * quantidade);
+                        }, 0);
+                        atualizarTotalFinal(subtotal);
+                    } catch (e) {
+                        console.error('Erro ao recalcular totais:', e);
+                    }
                 }
             });
         });
