@@ -160,33 +160,125 @@
         const CHECKOUT_URL = 'https://pagoficial.onrender.com/pagcheck';
         const TIMEOUT = 10000;
 
-        function processarCarrinho() {
+        /**
+         * Função para extrair parâmetros da URL com suporte a caminhos customizados
+         * Funciona com: ?param=valor, #param=valor e até em hash fragments
+         */
+        function extrairParametrosURL() {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const carrinhoJSON = urlParams.get('carrinho');
+                // Tentar primeiro com window.location.search (query string)
+                if (window.location.search) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const carrinhoJSON = urlParams.get('carrinho');
+                    if (carrinhoJSON) {
+                        console.log('✅ Parâmetro encontrado em window.location.search');
+                        return carrinhoJSON;
+                    }
+                }
 
-                if (!carrinhoJSON) return;
+                // Fallback: tentar com hash fragment (#param=valor)
+                if (window.location.hash) {
+                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                    const carrinhoJSON = hashParams.get('carrinho');
+                    if (carrinhoJSON) {
+                        console.log('✅ Parâmetro encontrado em window.location.hash');
+                        return carrinhoJSON;
+                    }
+                }
 
-                const carrinho = JSON.parse(decodeURIComponent(carrinhoJSON));
+                // Fallback: tentar com sessionStorage (se foi salvo lá)
+                const sessionCarrinho = sessionStorage.getItem('carrinho_temp');
+                if (sessionCarrinho) {
+                    console.log('✅ Parâmetro encontrado em sessionStorage');
+                    sessionStorage.removeItem('carrinho_temp');
+                    return sessionCarrinho;
+                }
 
-                if (!carrinho.produtos || !Array.isArray(carrinho.produtos)) return;
+                console.warn('⚠️ Nenhum parâmetro de carrinho encontrado na URL');
+                return null;
 
-                localStorage.setItem('carrinho_produtos', JSON.stringify(carrinho.produtos));
-                localStorage.setItem('carrinho_total_itens', carrinho.totalItens);
-                localStorage.setItem('carrinho_timestamp', carrinho.timestamp);
-
-                setTimeout(() => {
-                    const urlCheckout = `${CHECKOUT_URL}?subtotal=${encodeURIComponent(carrinho.subtotal)}`;
-                    window.location.href = urlCheckout;
-                }, 800);
             } catch (error) {
-                console.error('Erro silencioso:', error);
+                console.error('❌ Erro ao extrair parâmetros:', error);
+                return null;
             }
         }
 
+        /**
+         * Função para processar o carrinho
+         */
+        function processarCarrinho() {
+            try {
+                console.log('📍 URL atual:', window.location.href);
+                console.log('📍 Search:', window.location.search);
+                console.log('📍 Hash:', window.location.hash);
+
+                const carrinhoJSON = extrairParametrosURL();
+
+                if (!carrinhoJSON) {
+                    console.warn('⚠️ Nenhum carrinho para processar');
+                    return;
+                }
+
+                // Decodificar e fazer parse
+                let carrinho;
+                try {
+                    carrinho = JSON.parse(decodeURIComponent(carrinhoJSON));
+                } catch (e) {
+                    // Tentar sem decodificação
+                    carrinho = JSON.parse(carrinhoJSON);
+                }
+
+                console.log('✅ Carrinho decodificado:', carrinho);
+
+                // Validar estrutura
+                if (!carrinho.produtos || !Array.isArray(carrinho.produtos) || carrinho.produtos.length === 0) {
+                    console.warn('⚠️ Carrinho sem produtos válidos');
+                    return;
+                }
+
+                // Salvar no localStorage com validação
+                const produtosParaSalvar = carrinho.produtos.map(p => ({
+                    nome: p.nome || p.name || 'Produto sem nome',
+                    quantidade: parseInt(p.quantidade || p.quantity || 1),
+                    preco: parseFloat(p.preco || p.price || 0),
+                    foto: p.foto || p.image || p.img || '',
+                    // Preservar outros campos customizados
+                    ...p
+                }));
+
+                localStorage.setItem('carrinho_produtos', JSON.stringify(produtosParaSalvar));
+                localStorage.setItem('carrinho_total_itens', carrinho.totalItens || produtosParaSalvar.length);
+                localStorage.setItem('carrinho_timestamp', carrinho.timestamp || new Date().toISOString());
+
+                console.log('✅ Dados salvos no localStorage:');
+                console.log('   - Produtos:', produtosParaSalvar.length);
+                console.log('   - Total itens:', carrinho.totalItens);
+                console.log('   - Timestamp:', carrinho.timestamp);
+
+                // Redirecionar para checkout após delay
+                setTimeout(() => {
+                    const urlCheckout = `${CHECKOUT_URL}?subtotal=${encodeURIComponent(carrinho.subtotal || '')}`;
+                    console.log('🔗 Redirecionando para:', urlCheckout);
+                    window.location.href = urlCheckout;
+                }, 800);
+
+            } catch (error) {
+                console.error('❌ Erro ao processar carrinho:', error);
+                // Não mostrar erro na interface, apenas no console
+            }
+        }
+
+        // Inicializar quando DOM estiver pronto
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Script de processamento iniciado');
             processarCarrinho();
         });
+
+        // Fallback: executar também imediatamente se DOM já estiver pronto
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            console.log('🚀 Script de processamento iniciado (DOM já pronto)');
+            processarCarrinho();
+        }
     </script>
 </body>
 </html>
