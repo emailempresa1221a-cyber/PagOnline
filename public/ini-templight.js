@@ -1313,12 +1313,8 @@ function updateShippingCost() {
             shippingCost = 0;
             break;
         case 'express':
-            shippingText = 'R$ 6,90';
-            shippingCost = 6.90;
-            break;
-        case 'same-day':
-            shippingText = 'R$ 11,90';
-            shippingCost = 11.90;
+            shippingText = 'R$ 9,97';
+            shippingCost = 9.97;
             break;
         default:
             shippingText = 'GRÁTIS';
