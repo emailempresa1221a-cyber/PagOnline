@@ -1022,7 +1022,7 @@ async function handlePaymentSubmit(e) {
 async function processPixPayment(orderData) {
     const pixData = {
         paymentMethod: 'PIX',
-        amount: Math.round(orderData.total * 100),
+        amount: Math.round(orderData.total * 100), // Valor em centavos
         customer: {
             name: `${orderData.firstName} ${orderData.lastName}`,
             email: orderData.email,
@@ -1033,11 +1033,13 @@ async function processPixPayment(orderData) {
             }
         },
         items: [{
-            title: 'Pedido Loja Online',
+            name: 'Pedido Loja Online', // Alterado de 'title' para 'name'
             quantity: 1,
-            unitPrice: Math.round(orderData.total * 100)
+            price: Math.round(orderData.total * 100) // Alterado de 'unitPrice' para 'price'
         }],
-        expiresIn: 3600 
+        pix: {
+            expiresIn: 3600 // Movido para dentro do objeto 'pix'
+        }
     };
 
     try {
@@ -1052,7 +1054,8 @@ async function processPixPayment(orderData) {
         if (response.ok) {
             showPixPaymentDetails(result);
         } else {
-            const errorMsg = result.error || result.message || 'Erro na API PayEvo';
+            // Se o servidor retornar erro, pegamos a mensagem detalhada
+            const errorMsg = result.details?.message || result.message || 'Erro na API PayEvo';
             throw new Error(errorMsg);
         }
     } catch (error) {
@@ -1060,6 +1063,7 @@ async function processPixPayment(orderData) {
         alert(error.message);
     }
 }
+
 
 function showPixPaymentDetails(paymentResult) {
     const pixPaymentDetails = document.getElementById('pixPaymentDetails');
