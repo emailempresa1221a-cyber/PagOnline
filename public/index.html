@@ -1000,7 +1000,7 @@
       observer.observe(target, { attributes: true });
     }
 
-    // Lista de IDs dos campos obrigatórios
+  // Lista de IDs dos campos obrigatórios
 const requiredFields = [
   { id: 'email' },
   { id: 'zipCode' },
@@ -1047,12 +1047,13 @@ function validateDeliveryForm() {
   if (hasErrors) {
     alert('Por favor, preencha todos os campos obrigatórios para prosseguir.');
     return false;
+  } else {
+    // Se todos os campos estiverem válidos, avança para a próxima etapa
+    goToStep(3); 
+    return true;
   }
-  
-  // Se estiver tudo certo, você pode prosseguir com a lógica de mudança de etapa
-  // goToStep(3); 
-  return true;
 }
+
 
   </script>
 
