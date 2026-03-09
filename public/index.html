@@ -54,6 +54,19 @@
   </style>
 
  <style>
+
+   /* Estilos para sinalização de erro */
+.form-input.invalid {
+    border-color: #ef4444 !important;
+}
+
+.error-message.show {
+    display: block;
+    color: #ef4444;
+    font-size: 0.875em;
+    margin-top: 0.25em;
+}
+
     .products-list {
       margin-top: 20px;
         margin-bottom: 24px;
@@ -519,8 +532,8 @@
                     <!-- Seção 2.8: Botão de Continuidade (revelado após CPF válido) -->
                     <div class="button-group hidden" id="sectionButton">
                         <button type="button" class="btn btn-primary btn-full" id="btnContinuePayment" disabled onclick="validateDeliveryForm()">
-                            Prosseguir para o pagamento
-                        </button>
+    Prosseguir para o pagamento
+</button>
                     </div>
 
                     <!-- Botão Continuar Fictício (sempre visível até o botão real aparecer) -->
@@ -965,59 +978,6 @@
   <!-- Script principal com navegação progressiva -->
   <script src="script.js"></script>
   <script>
-    // Validação de campos obrigatórios
-    const requiredFields = [
-      { id: 'email' },
-      { id: 'zipCode' },
-      { id: 'firstName' },
-      { id: 'lastName' },
-      { id: 'phone' },
-      { id: 'number' },
-      { id: 'cpf' }
-    ];
-
-    function validateDeliveryForm() {
-      const deliveryForm = document.getElementById('deliveryForm');
-      let allValid = true;
-      let hasErrors = false;
-
-      requiredFields.forEach(fieldInfo => {
-        const field = document.getElementById(fieldInfo.id);
-        const errorMessage = document.getElementById(fieldInfo.id + 'Error');
-
-        if (field) {
-          // Verificar se o campo está visível
-          let isFieldVisible = true;
-          let currentElement = field;
-          while (currentElement && currentElement !== deliveryForm) {
-            if (currentElement.classList.contains('hidden')) {
-              isFieldVisible = false;
-              break;
-            }
-            currentElement = currentElement.parentElement;
-          }
-
-          if (isFieldVisible) {
-            if (field.value.trim() === '') {
-              field.classList.add('invalid');
-              if (errorMessage) errorMessage.classList.add('show');
-              allValid = false;
-              hasErrors = true;
-            } else {
-              field.classList.remove('invalid');
-              if (errorMessage) errorMessage.classList.remove('show');
-            }
-          }
-        }
-      });
-
-      if (hasErrors) {
-        alert('Por favor, preencha todos os campos obrigatórios para prosseguir.');
-      }
-
-      return allValid;
-    }
-
     // Monitorar a visibilidade da seção de dados pessoais para mostrar/ocultar o divisor
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -1039,6 +999,61 @@
     if (target) {
       observer.observe(target, { attributes: true });
     }
+
+    // Lista de IDs dos campos obrigatórios
+const requiredFields = [
+  { id: 'email' },
+  { id: 'zipCode' },
+  { id: 'firstName' },
+  { id: 'lastName' },
+  { id: 'phone' },
+  { id: 'number' },
+  { id: 'cpf' }
+];
+
+function validateDeliveryForm() {
+  const deliveryForm = document.getElementById('deliveryForm');
+  let hasErrors = false;
+
+  requiredFields.forEach(fieldInfo => {
+    const field = document.getElementById(fieldInfo.id);
+    const errorMessage = document.getElementById(fieldInfo.id + 'Error');
+
+    if (field) {
+      // Verifica se o campo está visível no momento (não está em uma seção oculta)
+      let isFieldVisible = true;
+      let currentElement = field;
+      while (currentElement && currentElement !== deliveryForm) {
+        if (currentElement.classList.contains('hidden')) {
+          isFieldVisible = false;
+          break;
+        }
+        currentElement = currentElement.parentElement;
+      }
+
+      if (isFieldVisible) {
+        if (field.value.trim() === '') {
+          field.classList.add('invalid');
+          if (errorMessage) errorMessage.classList.add('show');
+          hasErrors = true;
+        } else {
+          field.classList.remove('invalid');
+          if (errorMessage) errorMessage.classList.remove('show');
+        }
+      }
+    }
+  });
+
+  if (hasErrors) {
+    alert('Por favor, preencha todos os campos obrigatórios para prosseguir.');
+    return false;
+  }
+  
+  // Se estiver tudo certo, você pode prosseguir com a lógica de mudança de etapa
+  // goToStep(3); 
+  return true;
+}
+
   </script>
 
 </body>
