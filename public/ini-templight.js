@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartDisplay();
     initializeProgressiveFlow();
     initializePaymentMethod();
+    
+    // Tenta carregar produtos no resumo caso já estejam no DOM
+    updateReviewProducts();
 
     // Configurar teclado numérico para campos específicos
     const numericFields = ['cpf', 'zipCode', 'phone'];
@@ -772,39 +775,57 @@ function updateReviewData() {
     updateReviewProducts();
 }
 
-function updateReviewProducts() {
+function updateReviewProducts(retryCount = 0) {
     const reviewProductsList = document.getElementById('reviewProductsList');
     const mainProductsList = document.getElementById('productsList');
     
     if (!reviewProductsList || !mainProductsList) return;
     
-    // Limpa a lista atual
-    reviewProductsList.innerHTML = '';
-    
-    // Clona os produtos da lista principal (sidebar)
+    // Tenta obter os produtos da lista principal
     const products = mainProductsList.querySelectorAll('.product-item');
     
-    products.forEach(product => {
-        const name = product.querySelector('.product-name').textContent;
-        const price = product.querySelector('.product-price').textContent;
-        const qty = product.querySelector('.product-qty').textContent;
-        const imageSrc = product.querySelector('.product-image img').src;
+    // Se não encontrar produtos e tiver menos de 5 tentativas, tenta novamente em 500ms
+    // Isso resolve casos onde os produtos são carregados via LocalStorage/Async
+    if (products.length === 0 && retryCount < 5) {
+        setTimeout(() => updateReviewProducts(retryCount + 1), 500);
+        return;
+    }
+    
+    // Limpa a lista atual apenas se encontrou produtos para evitar piscar vazio
+    if (products.length > 0) {
+        reviewProductsList.innerHTML = '';
         
-        const productHtml = `
-            <div class="review-product-item">
-                <div class="review-product-image">
-                    <img src="${imageSrc}" alt="${name}">
-                </div>
-                <div class="review-product-info">
-                    <div class="review-product-name">${name}</div>
-                    <div class="review-product-qty">Qtd: ${qty}</div>
-                </div>
-                <div class="review-product-price">${price}</div>
-            </div>
-        `;
-        
-        reviewProductsList.insertAdjacentHTML('beforeend', productHtml);
-    });
+        products.forEach(product => {
+            const nameEl = product.querySelector('.product-name');
+            const priceEl = product.querySelector('.product-price');
+            const qtyEl = product.querySelector('.product-qty');
+            const imgEl = product.querySelector('.product-image img');
+            
+            if (nameEl && priceEl && qtyEl && imgEl) {
+                const name = nameEl.textContent;
+                const price = priceEl.textContent;
+                const qty = qtyEl.textContent;
+                const imageSrc = imgEl.src;
+                
+                const productHtml = `
+                    <div class="review-product-item">
+                        <div class="review-product-image">
+                            <img src="${imageSrc}" alt="${name}">
+                        </div>
+                        <div class="review-product-info">
+                            <div class="review-product-name">${name}</div>
+                            <div class="review-product-qty">Qtd: ${qty}</div>
+                        </div>
+                        <div class="review-product-price">${price}</div>
+                    </div>
+                `;
+                
+                reviewProductsList.insertAdjacentHTML('beforeend', productHtml);
+            }
+        });
+    } else {
+        reviewProductsList.innerHTML = '<div style="padding: 10px; color: #64748b; font-size: 13px;">Nenhum produto encontrado.</div>';
+    }
 }
 
 function goToStep(step) {
