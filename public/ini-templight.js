@@ -51,9 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartDisplay();
     initializeProgressiveFlow();
     initializePaymentMethod();
-    
-    // Tenta carregar produtos no resumo caso já estejam no DOM
-    updateReviewProducts();
 
     // Configurar teclado numérico para campos específicos
     const numericFields = ['cpf', 'zipCode', 'phone'];
@@ -769,79 +766,6 @@ function updateReviewData() {
         const time = shippingOption.querySelector('p').textContent;
         document.getElementById('reviewShippingMethod').textContent = title;
         document.getElementById('reviewShippingTime').textContent = time;
-    }
-
-    // Atualiza lista de produtos no resumo
-    updateReviewProducts();
-}
-
-function updateReviewProducts() {
-    const reviewProductsList = document.getElementById('reviewProductsList');
-    if (!reviewProductsList) return;
-    
-    // Tenta obter os produtos do LocalStorage (conforme o código de origem enviado)
-    const storedProductsJSON = localStorage.getItem('carrinho_produtos');
-    let products = [];
-    
-    if (storedProductsJSON) {
-        try {
-            products = JSON.parse(storedProductsJSON);
-        } catch (e) {
-            console.error('Erro ao ler produtos do LocalStorage:', e);
-        }
-    }
-
-    // Se não houver produtos no LocalStorage, tenta pegar do DOM (sidebar) como fallback
-    if (products.length === 0) {
-        const mainProductsList = document.getElementById('productsList');
-        if (mainProductsList) {
-            const domProducts = mainProductsList.querySelectorAll('.product-item');
-            domProducts.forEach(product => {
-                const nameEl = product.querySelector('.product-name');
-                const priceEl = product.querySelector('.product-price');
-                const qtyEl = product.querySelector('.product-qty');
-                const imgEl = product.querySelector('.product-image img');
-                
-                if (nameEl && priceEl && qtyEl && imgEl) {
-                    products.push({
-                        nome: nameEl.textContent,
-                        preco: priceEl.textContent,
-                        quantidade: qtyEl.textContent.replace(/\D/g, ''),
-                        imagem: imgEl.src
-                    });
-                }
-            });
-        }
-    }
-    
-    // Limpa e renderiza
-    reviewProductsList.innerHTML = '';
-    
-    if (products.length > 0) {
-        products.forEach(product => {
-            // Normaliza os nomes das propriedades (LocalStorage vs DOM fallback)
-            const name = product.nome || product.name;
-            const price = product.preco || product.price;
-            const qty = product.quantidade || product.qty;
-            const imageSrc = product.imagem || product.image;
-            
-            const productHtml = `
-                <div class="review-product-item">
-                    <div class="review-product-image">
-                        <img src="${imageSrc}" alt="${name}">
-                    </div>
-                    <div class="review-product-info">
-                        <div class="review-product-name">${name}</div>
-                        <div class="review-product-qty">Qtd: ${qty}</div>
-                    </div>
-                    <div class="review-product-price">${price.toString().includes('R$') ? price : 'R$ ' + parseFloat(price).toFixed(2).replace('.', ',')}</div>
-                </div>
-            `;
-            
-            reviewProductsList.insertAdjacentHTML('beforeend', productHtml);
-        });
-    } else {
-        reviewProductsList.innerHTML = '<div style="padding: 10px; color: #64748b; font-size: 13px;">Nenhum produto encontrado no resumo.</div>';
     }
 }
 
