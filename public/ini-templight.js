@@ -725,6 +725,14 @@ function applyExpiryMask(value) {
 function toggleReviewSection() {
     const section = document.getElementById('reviewSection');
     section.classList.toggle('expanded');
+    
+    // Anima o toggle suavemente
+    const content = section.querySelector('.review-content');
+    if (section.classList.contains('expanded')) {
+        content.style.maxHeight = '800px';
+    } else {
+        content.style.maxHeight = '0';
+    }
 }
 
 function updateReviewData() {
