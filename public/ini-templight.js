@@ -722,6 +722,45 @@ function applyExpiryMask(value) {
         .replace(/^(\d{2})(\d)/, '$1/$2');
 }
 
+function toggleReviewSection() {
+    const section = document.getElementById('reviewSection');
+    section.classList.toggle('expanded');
+}
+
+function updateReviewData() {
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const cpf = document.getElementById('cpf').value;
+    const address = document.getElementById('addressDisplay').textContent;
+    const neighborhood = document.getElementById('neighborhoodDisplay').textContent;
+    const city = document.getElementById('cityDisplay').textContent;
+    const state = document.getElementById('stateDisplay').textContent;
+    const number = document.getElementById('number').value;
+    const complement = document.getElementById('complement').value;
+    const zipCode = document.getElementById('zipCode').value;
+
+    document.getElementById('reviewName').textContent = `${firstName} ${lastName}`;
+    document.getElementById('reviewEmail').textContent = email;
+    document.getElementById('reviewPhone').textContent = phone;
+    document.getElementById('reviewCpf').textContent = cpf;
+    
+    let fullAddress = `${address}, ${number}`;
+    if (complement) fullAddress += ` - ${complement}`;
+    fullAddress += ` | ${neighborhood}, ${city} - ${state} | CEP: ${zipCode}`;
+    document.getElementById('reviewAddress').textContent = fullAddress;
+
+    // Dados do frete
+    const shippingOption = document.querySelector('.shipping-option.selected');
+    if (shippingOption) {
+        const title = shippingOption.querySelector('h4').textContent;
+        const time = shippingOption.querySelector('p').textContent;
+        document.getElementById('reviewShippingMethod').textContent = title;
+        document.getElementById('reviewShippingTime').textContent = time;
+    }
+}
+
 function goToStep(step) {
     if (step === 2) {
         // Voltando para etapa de entrega
@@ -733,6 +772,9 @@ function goToStep(step) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     } else if (step === 3 && validateDeliveryForm()) {
+        // Atualiza os dados de revisão antes de mostrar a etapa 3
+        updateReviewData();
+        
         // Avançando para pagamento
         currentStep = 3;
         updateStepDisplay();
