@@ -143,7 +143,6 @@ function updateOrderTotals() {
 
 function setupEventListeners() {
     // Form submissions
-    document.getElementById('deliveryForm').addEventListener('submit', handleDeliverySubmit);
     document.getElementById('paymentForm').addEventListener('submit', handlePaymentSubmit);
 
     // Shipping options
@@ -216,6 +215,57 @@ function setupEventListeners() {
     const btnFictitious = document.getElementById('btnContinueFictitious');
     if (btnFictitious) {
         btnFictitious.addEventListener('click', handleFictitiousButtonClick);
+    }
+
+    // Validação ao clicar em "Prosseguir para o pagamento"
+    const deliveryForm = document.getElementById('deliveryForm');
+    if (deliveryForm) {
+        deliveryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fieldsToValidate = [
+                'email', 'zipCode', 'firstName', 'lastName', 'phone', 'number', 'cpf'
+            ];
+            
+            let firstInvalidField = null;
+            let isFormValid = true;
+
+            // Valida campos de input
+            fieldsToValidate.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    const isValid = validateField(field);
+                    if (!isValid && !firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                    if (!isValid) isFormValid = false;
+                }
+            });
+
+            // Valida seleção de frete
+            if (!selectedShipping) {
+                isFormValid = false;
+                const shippingOptions = document.getElementById('shippingOptions');
+                if (!firstInvalidField) firstInvalidField = shippingOptions;
+                
+                // Alerta visual para frete (opcional, já que não é um input padrão)
+                shippingOptions.style.border = '1px solid #ef4444';
+                shippingOptions.style.borderRadius = '8px';
+                shippingOptions.style.padding = '10px';
+                setTimeout(() => { shippingOptions.style.border = 'none'; }, 3000);
+            }
+
+            if (!isFormValid) {
+                if (firstInvalidField) {
+                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (firstInvalidField.focus) firstInvalidField.focus();
+                }
+                return false;
+            }
+
+            // Se tudo estiver válido, prossegue para o pagamento
+            handleDeliverySubmit(e);
+        });
     }
 }
 
@@ -589,7 +639,8 @@ function checkFormCompletion() {
         number.value.trim() !== '' &&
         validateCPF(cpf.value);
     
-    btn.disabled = !isComplete;
+    // O botão agora fica habilitado para permitir a sinalização de erros ao clicar
+    btn.disabled = false;
     
     // Mostra o botão se todos os campos anteriores estiverem preenchidos
     if (flowState.cpfValid && !document.getElementById('sectionButton').classList.contains('show')) {
