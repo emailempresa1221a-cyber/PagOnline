@@ -775,56 +775,73 @@ function updateReviewData() {
     updateReviewProducts();
 }
 
-function updateReviewProducts(retryCount = 0) {
+function updateReviewProducts() {
     const reviewProductsList = document.getElementById('reviewProductsList');
-    const mainProductsList = document.getElementById('productsList');
+    if (!reviewProductsList) return;
     
-    if (!reviewProductsList || !mainProductsList) return;
+    // Tenta obter os produtos do LocalStorage (conforme o código de origem enviado)
+    const storedProductsJSON = localStorage.getItem('carrinho_produtos');
+    let products = [];
     
-    // Tenta obter os produtos da lista principal
-    const products = mainProductsList.querySelectorAll('.product-item');
-    
-    // Se não encontrar produtos e tiver menos de 5 tentativas, tenta novamente em 500ms
-    // Isso resolve casos onde os produtos são carregados via LocalStorage/Async
-    if (products.length === 0 && retryCount < 5) {
-        setTimeout(() => updateReviewProducts(retryCount + 1), 500);
-        return;
+    if (storedProductsJSON) {
+        try {
+            products = JSON.parse(storedProductsJSON);
+        } catch (e) {
+            console.error('Erro ao ler produtos do LocalStorage:', e);
+        }
+    }
+
+    // Se não houver produtos no LocalStorage, tenta pegar do DOM (sidebar) como fallback
+    if (products.length === 0) {
+        const mainProductsList = document.getElementById('productsList');
+        if (mainProductsList) {
+            const domProducts = mainProductsList.querySelectorAll('.product-item');
+            domProducts.forEach(product => {
+                const nameEl = product.querySelector('.product-name');
+                const priceEl = product.querySelector('.product-price');
+                const qtyEl = product.querySelector('.product-qty');
+                const imgEl = product.querySelector('.product-image img');
+                
+                if (nameEl && priceEl && qtyEl && imgEl) {
+                    products.push({
+                        nome: nameEl.textContent,
+                        preco: priceEl.textContent,
+                        quantidade: qtyEl.textContent.replace(/\D/g, ''),
+                        imagem: imgEl.src
+                    });
+                }
+            });
+        }
     }
     
-    // Limpa a lista atual apenas se encontrou produtos para evitar piscar vazio
+    // Limpa e renderiza
+    reviewProductsList.innerHTML = '';
+    
     if (products.length > 0) {
-        reviewProductsList.innerHTML = '';
-        
         products.forEach(product => {
-            const nameEl = product.querySelector('.product-name');
-            const priceEl = product.querySelector('.product-price');
-            const qtyEl = product.querySelector('.product-qty');
-            const imgEl = product.querySelector('.product-image img');
+            // Normaliza os nomes das propriedades (LocalStorage vs DOM fallback)
+            const name = product.nome || product.name;
+            const price = product.preco || product.price;
+            const qty = product.quantidade || product.qty;
+            const imageSrc = product.imagem || product.image;
             
-            if (nameEl && priceEl && qtyEl && imgEl) {
-                const name = nameEl.textContent;
-                const price = priceEl.textContent;
-                const qty = qtyEl.textContent;
-                const imageSrc = imgEl.src;
-                
-                const productHtml = `
-                    <div class="review-product-item">
-                        <div class="review-product-image">
-                            <img src="${imageSrc}" alt="${name}">
-                        </div>
-                        <div class="review-product-info">
-                            <div class="review-product-name">${name}</div>
-                            <div class="review-product-qty">Qtd: ${qty}</div>
-                        </div>
-                        <div class="review-product-price">${price}</div>
+            const productHtml = `
+                <div class="review-product-item">
+                    <div class="review-product-image">
+                        <img src="${imageSrc}" alt="${name}">
                     </div>
-                `;
-                
-                reviewProductsList.insertAdjacentHTML('beforeend', productHtml);
-            }
+                    <div class="review-product-info">
+                        <div class="review-product-name">${name}</div>
+                        <div class="review-product-qty">Qtd: ${qty}</div>
+                    </div>
+                    <div class="review-product-price">${price.toString().includes('R$') ? price : 'R$ ' + parseFloat(price).toFixed(2).replace('.', ',')}</div>
+                </div>
+            `;
+            
+            reviewProductsList.insertAdjacentHTML('beforeend', productHtml);
         });
     } else {
-        reviewProductsList.innerHTML = '<div style="padding: 10px; color: #64748b; font-size: 13px;">Nenhum produto encontrado.</div>';
+        reviewProductsList.innerHTML = '<div style="padding: 10px; color: #64748b; font-size: 13px;">Nenhum produto encontrado no resumo.</div>';
     }
 }
 
