@@ -767,6 +767,44 @@ function updateReviewData() {
         document.getElementById('reviewShippingMethod').textContent = title;
         document.getElementById('reviewShippingTime').textContent = time;
     }
+
+    // Atualiza lista de produtos no resumo
+    updateReviewProducts();
+}
+
+function updateReviewProducts() {
+    const reviewProductsList = document.getElementById('reviewProductsList');
+    const mainProductsList = document.getElementById('productsList');
+    
+    if (!reviewProductsList || !mainProductsList) return;
+    
+    // Limpa a lista atual
+    reviewProductsList.innerHTML = '';
+    
+    // Clona os produtos da lista principal (sidebar)
+    const products = mainProductsList.querySelectorAll('.product-item');
+    
+    products.forEach(product => {
+        const name = product.querySelector('.product-name').textContent;
+        const price = product.querySelector('.product-price').textContent;
+        const qty = product.querySelector('.product-qty').textContent;
+        const imageSrc = product.querySelector('.product-image img').src;
+        
+        const productHtml = `
+            <div class="review-product-item">
+                <div class="review-product-image">
+                    <img src="${imageSrc}" alt="${name}">
+                </div>
+                <div class="review-product-info">
+                    <div class="review-product-name">${name}</div>
+                    <div class="review-product-qty">Qtd: ${qty}</div>
+                </div>
+                <div class="review-product-price">${price}</div>
+            </div>
+        `;
+        
+        reviewProductsList.insertAdjacentHTML('beforeend', productHtml);
+    });
 }
 
 function goToStep(step) {
