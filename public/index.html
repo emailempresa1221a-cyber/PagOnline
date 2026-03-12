@@ -332,40 +332,49 @@
 
     /* Estilos para a seção Revisar Dados */
     .review-section {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        margin-bottom: 24px;
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        margin-bottom: 32px;
         overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .review-section:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .review-header {
-        padding: 12px 16px;
-        background: #f3f4f6;
+        padding: 18px 24px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
         user-select: none;
-        transition: background 0.2s;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #e2e8f0;
     }
 
     .review-header:hover {
-        background: #e5e7eb;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e8eef7 100%);
     }
 
     .review-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: #374151;
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
+        letter-spacing: -0.3px;
     }
 
     .review-toggle-icon {
-        font-size: 12px;
-        transition: transform 0.3s;
+        font-size: 14px;
+        transition: transform 0.3s ease;
+        color: #64748b;
     }
 
     .review-section.expanded .review-toggle-icon {
@@ -379,38 +388,68 @@
     }
 
     .review-section.expanded .review-content {
-        max-height: 500px;
-        padding: 16px;
+        max-height: 800px;
+        padding: 28px 24px;
+        background: #ffffff;
     }
 
     .review-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        font-size: 13px;
+        gap: 32px 24px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .review-grid {
+            gap: 24px 16px;
+        }
     }
 
     @media (max-width: 480px) {
         .review-grid {
             grid-template-columns: 1fr;
+            gap: 20px;
         }
     }
 
     .review-item-label {
-        color: #6b7280;
-        margin-bottom: 2px;
+        color: #64748b;
+        margin-bottom: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .review-item-value {
-        color: #111827;
+        color: #1e293b;
         font-weight: 500;
+        font-size: 14px;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .review-section-group {
+        grid-column: 1 / -1;
+    }
+
+    .review-section-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e2e8f0;
     }
 
     .review-divider {
         grid-column: 1 / -1;
         height: 1px;
-        background: #e5e7eb;
-        margin: 4px 0;
+        background: #e2e8f0;
+        margin: 8px 0;
     }
 </style>
 
@@ -637,17 +676,21 @@
                 <p class="step-subtitle">Escolha como deseja pagar seu pedido</p>
 
                 <!-- Seção Revisar Dados (Recolhível) -->
-                <div class="review-section" id="reviewSection">
+                <div class="review-section expanded" id="reviewSection">
                     <div class="review-header" onclick="toggleReviewSection()">
                         <div class="review-title">
-                            <span>📝</span> Revisar Dados
+                            <span>✓</span> Resumo do Pedido
                         </div>
                         <span class="review-toggle-icon">▼</span>
                     </div>
                     <div class="review-content">
                         <div class="review-grid">
+                            <!-- Seção Dados Pessoais -->
+                            <div class="review-section-group">
+                                <div class="review-section-title">Dados Pessoais</div>
+                            </div>
                             <div>
-                                <div class="review-item-label">Nome</div>
+                                <div class="review-item-label">Nome Completo</div>
                                 <div class="review-item-value" id="reviewName">-</div>
                             </div>
                             <div>
@@ -662,14 +705,22 @@
                                 <div class="review-item-label">CPF</div>
                                 <div class="review-item-value" id="reviewCpf">-</div>
                             </div>
-                            <div class="review-divider"></div>
+                            
+                            <!-- Seção Endereço -->
+                            <div class="review-section-group" style="margin-top: 8px;">
+                                <div class="review-section-title">Endereço de Entrega</div>
+                            </div>
                             <div style="grid-column: 1 / -1;">
-                                <div class="review-item-label">Endereço de Entrega</div>
+                                <div class="review-item-label">Endereço Completo</div>
                                 <div class="review-item-value" id="reviewAddress">-</div>
                             </div>
-                            <div class="review-divider"></div>
+                            
+                            <!-- Seção Frete -->
+                            <div class="review-section-group" style="margin-top: 8px;">
+                                <div class="review-section-title">Opção de Entrega</div>
+                            </div>
                             <div>
-                                <div class="review-item-label">Entrega Escolhida</div>
+                                <div class="review-item-label">Tipo de Entrega</div>
                                 <div class="review-item-value" id="reviewShippingMethod">-</div>
                             </div>
                             <div>
