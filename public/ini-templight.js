@@ -1495,11 +1495,8 @@ function updateInstallmentOptions(total) {
         installmentsSelect.removeChild(installmentsSelect.lastChild);
     }
     
-    const installmentOptions = [
-        { value: 1, text: `1x R$ ${total.toFixed(2).replace('.', ',')} à vista` },
-        { value: 2, text: `2x R$ ${(total / 2).toFixed(2).replace('.', ',')} sem juros` },
-        { value: 3, text: `3x R$ ${(total / 3).toFixed(2).replace('.', ',')} sem juros` }
-    ];
+    const installmentOptions = [];
+
     
     installmentOptions.forEach(option => {
         const optionEl = document.createElement('option');
