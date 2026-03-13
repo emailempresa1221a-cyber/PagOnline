@@ -848,13 +848,15 @@
                     </div>
 
                     <div class="button-group">
-                        <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
-                            Voltar
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            Pagar Agora
-                        </button>
-                    </div>
+    <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
+        Voltar
+    </button>
+    <!-- Adicione um ID se quiser que o script o manipule especificamente, 
+         mas o segredo é o overlay de carregamento existir no body -->
+    <button type="submit" class="btn btn-primary" id="btnFinalizePayment">
+        Pagar Agora
+    </button>
+</div>
                 </form>
             </div>
         </main>
@@ -1086,6 +1088,12 @@
         </div>
     </div>
 </footer>
+
+  <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
+    <div class="spinner"></div>
+    <p>Processando seu pagamento...</p>
+</div>
+
 
 
 <!-- Chamada para o seu script original -->
