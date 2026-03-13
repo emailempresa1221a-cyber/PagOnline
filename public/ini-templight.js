@@ -1,3 +1,5 @@
+ Primeiro javascript:
+
 /**
  * Checkout Progressivo - Script Principal
  * Fluxo UX otimizado com revelação progressiva de campos
@@ -143,6 +145,7 @@ function updateOrderTotals() {
 
 function setupEventListeners() {
     // Form submissions
+    document.getElementById('deliveryForm').addEventListener('submit', handleDeliverySubmit);
     document.getElementById('paymentForm').addEventListener('submit', handlePaymentSubmit);
 
     // Shipping options
@@ -215,57 +218,6 @@ function setupEventListeners() {
     const btnFictitious = document.getElementById('btnContinueFictitious');
     if (btnFictitious) {
         btnFictitious.addEventListener('click', handleFictitiousButtonClick);
-    }
-
-    // Validação ao clicar em "Prosseguir para o pagamento"
-    const deliveryForm = document.getElementById('deliveryForm');
-    if (deliveryForm) {
-        deliveryForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const fieldsToValidate = [
-                'email', 'zipCode', 'firstName', 'lastName', 'phone', 'number', 'cpf'
-            ];
-            
-            let firstInvalidField = null;
-            let isFormValid = true;
-
-            // Valida campos de input
-            fieldsToValidate.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    const isValid = validateField(field);
-                    if (!isValid && !firstInvalidField) {
-                        firstInvalidField = field;
-                    }
-                    if (!isValid) isFormValid = false;
-                }
-            });
-
-            // Valida seleção de frete
-            if (!selectedShipping) {
-                isFormValid = false;
-                const shippingOptions = document.getElementById('shippingOptions');
-                if (!firstInvalidField) firstInvalidField = shippingOptions;
-                
-                // Alerta visual para frete (opcional, já que não é um input padrão)
-                shippingOptions.style.border = '1px solid #ef4444';
-                shippingOptions.style.borderRadius = '8px';
-                shippingOptions.style.padding = '10px';
-                setTimeout(() => { shippingOptions.style.border = 'none'; }, 3000);
-            }
-
-            if (!isFormValid) {
-                if (firstInvalidField) {
-                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    if (firstInvalidField.focus) firstInvalidField.focus();
-                }
-                return false;
-            }
-
-            // Se tudo estiver válido, prossegue para o pagamento
-            handleDeliverySubmit(e);
-        });
     }
 }
 
@@ -816,8 +768,6 @@ function updateProgress() {
         } else if (stepNumber === currentStep) {
             step.classList.add('active');
             step.querySelector('.step-circle').innerHTML = stepNumber;
-        } else {
-            step.querySelector('.step-circle').innerHTML = stepNumber;
         }
     });
 
@@ -934,7 +884,7 @@ function validateField(field) {
 }
 
 function validateEmail(email) {
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return emailRegex.test(email);
 }
 
@@ -1050,27 +1000,32 @@ async function sendFirstEmailNotification() {
             templateParams
         );
 
-        console.log('Primeiro email enviado com sucesso!', response.status, response.text);
+        console.log('Email enviado com sucesso!', response.status, response.text);
         return true;
     } catch (error) {
-        console.error('Erro ao enviar primeiro email:', error);
+        console.error('Erro ao enviar email:', error);
         return false;
     }
 }
 
-// Função para enviar email via EmailJS (quando clica em "Prosseguir para pagamento")
-async function sendEmailNotification(contactData) {
+// Função para enviar email completo via EmailJS (quando o pedido é finalizado)
+async function sendEmailNotification(orderData) {
     try {
         const templateParams = {
-            customer_name: `${contactData.firstName} ${contactData.lastName}`,
-            customer_email: contactData.email,
-            customer_cpf: contactData.cpf,
-            customer_phone: contactData.phone,
+            customer_name: `${orderData.firstName} ${orderData.lastName}`,
+            customer_email: orderData.email,
+            customer_cpf: orderData.cpf,
+            customer_phone: orderData.phone,
             order_subtotal: `R$ ${cartData.subtotal.toFixed(2).replace(".", ",")}`,
+            order_shipping: `R$ ${getShippingCost().toFixed(2).replace(".", ",")}`,
+            order_total: `R$ ${calculateTotal().toFixed(2).replace(".", ",")}`,
             order_date: new Date().toLocaleString('pt-BR'),
-            to_name: contactData.firstName,
+            shipping_address: `${orderData.address}, ${orderData.number} ${orderData.complement ? `- ${orderData.complement}` : ''} - ${orderData.neighborhood}, ${orderData.city} - ${orderData.state}, ${orderData.zipCode}`,
+            shipping_method: orderData.shippingMethod,
+            payment_method: orderData.paymentMethod,
+            to_name: orderData.firstName,
             from_name: 'PagOnline',
-            message: `Novo pedido iniciado!\n\nCliente: ${contactData.firstName} ${contactData.lastName}\nE-mail: ${contactData.email}\nCPF: ${contactData.cpf}\nTelefone: ${contactData.phone}\nValor: R$ ${cartData.subtotal.toFixed(2).replace(".", ",")}\nData: ${new Date().toLocaleString('pt-BR')}`
+            message: `Novo pedido finalizado!\n\nCliente: ${orderData.firstName} ${orderData.lastName}\nE-mail: ${orderData.email}\nCPF: ${orderData.cpf}\nTelefone: ${orderData.phone}\n\nEndereço de Entrega: ${orderData.address}, ${orderData.number} ${orderData.complement ? `- ${orderData.complement}` : ''} - ${orderData.neighborhood}, ${orderData.city} - ${orderData.state}, ${orderData.zipCode}\nMétodo de Envio: ${orderData.shippingMethod}\n\nSubtotal: R$ ${cartData.subtotal.toFixed(2).replace(".", ",")}\nFrete: R$ ${getShippingCost().toFixed(2).replace(".", ",")}\nTotal: R$ ${calculateTotal().toFixed(2).replace(".", ",")}\n\nMétodo de Pagamento: ${orderData.paymentMethod}\nData: ${new Date().toLocaleString('pt-BR')}`
         };
 
         const response = await emailjs.send(
@@ -1432,7 +1387,7 @@ function updateShippingCost() {
         document.getElementById('creditCardFeeRow').style.display = 'flex';
         document.getElementById('mobileCreditCardFeeRow').style.display = 'flex';
         
-        const creditCardFeeFormatted = `+R$ ${creditCardFee.toFixed(2).replace('.', ',')}`;
+        const creditCardFeeFormatted = `+R$ ${creditCardFee.toFixed(2).replace(".", ",")}`;
         document.getElementById('creditCardFee').textContent = creditCardFeeFormatted;
         document.getElementById('mobileCreditCardFee').textContent = creditCardFeeFormatted;
         
@@ -1454,7 +1409,7 @@ function updateShippingCost() {
     
     updatePaymentMethodValues(total - creditCardFee);
 
-    const totalFormatted = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    const totalFormatted = `R$ ${total.toFixed(2).replace(".", ",")}`;
     
     if (shippingCostEl) shippingCostEl.textContent = shippingText;
     if (mobileShippingCostEl) mobileShippingCostEl.textContent = shippingText;
@@ -1467,7 +1422,7 @@ function updateCreditCardValues(totalWithFee) {
     const creditCardTotalValueEl = document.getElementById('creditCardTotalValue');
     
     if (creditCardTotalValueEl) {
-        creditCardTotalValueEl.textContent = `R$ ${totalWithFee.toFixed(2).replace('.', ',')}`;
+        creditCardTotalValueEl.textContent = `R$ ${totalWithFee.toFixed(2).replace(".", ",")}`;
     }
     
     updateInstallmentOptions(totalWithFee);
@@ -1477,7 +1432,7 @@ function updatePaymentMethodValues(baseTotal) {
     const pixValueEl = document.getElementById('pixValue');
     const boletoValueEl = document.getElementById('boletoValue');
     
-    const baseFormatted = `R$ ${baseTotal.toFixed(2).replace('.', ',')}`;
+    const baseFormatted = `R$ ${baseTotal.toFixed(2).replace(".", ",")}`;
     
     if (pixValueEl) {
         pixValueEl.textContent = baseFormatted;
@@ -1495,9 +1450,21 @@ function updateInstallmentOptions(total) {
         installmentsSelect.removeChild(installmentsSelect.lastChild);
     }
     
-    const installmentOptions = [];
+    const installmentOptions = [
+        { value: 1, text: `1x R$ ${total.toFixed(2).replace(".", ",")} à vista` },
+        { value: 2, text: `2x R$ ${(total / 2).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 3, text: `3x R$ ${(total / 3).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 4, text: `4x R$ ${(total / 4).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 5, text: `5x R$ ${(total / 5).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 6, text: `6x R$ ${(total / 6).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 7, text: `7x R$ ${(total / 7).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 8, text: `8x R$ ${(total / 8).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 9, text: `9x R$ ${(total / 9).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 10, text: `10x R$ ${(total / 10).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 11, text: `11x R$ ${(total / 11).toFixed(2).replace(".", ",")} sem juros` },
+        { value: 12, text: `12x R$ ${(total / 12).toFixed(2).replace(".", ",")} sem juros` },
+    ];
 
-    
     installmentOptions.forEach(option => {
         const optionEl = document.createElement('option');
         optionEl.value = option.value;
