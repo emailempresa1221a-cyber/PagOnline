@@ -464,6 +464,245 @@
     display: block !important;
 }
 
+   /* ===== SIDEBAR - RESUMO DO PEDIDO ===== */
+
+.sidebar {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.order-summary-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 24px;
+    letter-spacing: -0.3px;
+}
+
+/* ===== LISTA DE PRODUTOS ===== */
+
+.products-list {
+    margin-bottom: 24px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.products-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.products-list::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+}
+
+.products-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.products-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ===== TOTAIS DO PEDIDO ===== */
+
+.order-totals {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    font-size: 14px;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.total-row:last-child {
+    border-bottom: none;
+}
+
+.total-row span:first-child {
+    font-weight: 500;
+    color: #64748b;
+}
+
+.total-row span:last-child {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* ===== TOTAL FINAL ===== */
+
+.total-row.final {
+    padding: 16px 0;
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 2px solid #cbd5e1;
+    border-bottom: none;
+    font-size: 18px;
+}
+
+.total-row.final span:first-child {
+    font-weight: 700;
+    color: #111827;
+    font-size: 16px;
+}
+
+.total-row.final span:last-child {
+    font-weight: 800;
+    color: #2563eb;
+    font-size: 20px;
+}
+
+/* ===== DESCONTO (se aplicável) ===== */
+
+.total-row.discount {
+    color: #059669;
+    padding: 12px 0;
+}
+
+.total-row.discount span:last-child {
+    color: #059669;
+    font-weight: 700;
+}
+
+/* ===== CUPOM DE DESCONTO ===== */
+
+.discount-code {
+    margin-bottom: 20px;
+}
+
+.discount-code .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.discount-input {
+    display: flex;
+    gap: 8px;
+}
+
+.discount-input input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+    background: white;
+    color: #111827;
+    transition: all 0.2s ease;
+}
+
+.discount-input input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.discount-input button {
+    padding: 10px 16px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.discount-input button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* ===== SELOS DE CONFIANÇA ===== */
+
+.trust-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #166534;
+    font-weight: 500;
+}
+
+.trust-icon {
+    font-size: 16px;
+    font-weight: 700;
+    color: #059669;
+    flex-shrink: 0;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 992px) {
+    .sidebar {
+        position: static;
+        margin-top: 32px;
+    }
+}
+
+@media (max-width: 640px) {
+    .sidebar {
+        padding: 20px;
+    }
+
+    .order-summary-title {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .order-totals {
+        padding: 16px;
+    }
+
+    .total-row {
+        padding: 10px 0;
+        font-size: 13px;
+    }
+
+    .total-row.final {
+        font-size: 16px;
+    }
+
+    .total-row.final span:last-child {
+        font-size: 18px;
+    }
+}
+
+
 </style>
 
 </head>
