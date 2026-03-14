@@ -798,8 +798,20 @@ function updateReviewProducts() {
         produtos.forEach(produto => {
             const nome = produto.nome || produto.name || 'Produto';
             const quantidade = produto.quantidade || produto.quantity || 1;
-            const preco = parseFloat(produto.preco || produto.price || 0);
+            let preco = produto.preco || produto.price || 0;
             const foto = produto.foto || produto.image || '';
+
+            // Converter para numero se for string
+            if (typeof preco === 'string') {
+                preco = parseFloat(preco.replace(',', '.'));
+            } else {
+                preco = parseFloat(preco);
+            }
+
+            // Se invalido, usar 0
+            if (isNaN(preco)) {
+                preco = 0;
+            }
 
             const precoFormatado = preco.toLocaleString('pt-BR', {
                 style: 'currency',
