@@ -774,43 +774,96 @@ function updateReviewData() {
 }
 
 /**
- * Função para duplicar os produtos do Resumo do Pedido para a seção de Revisão
- * Copia diretamente o HTML dos produtos da barra lateral
+ * Função para carregar os produtos do localStorage (carrinho_produtos) 
+ * e exibir na seção de Revisão de Informações
  */
 function updateReviewProducts() {
     const reviewProductsList = document.getElementById('reviewProductsList');
-    const productsList = document.getElementById('productsList');
-    
-    if (!reviewProductsList || !productsList) return;
+    if (!reviewProductsList) return;
 
-    // Duplicar o conteudo HTML dos produtos da barra lateral para a secao de revisao
-    reviewProductsList.innerHTML = productsList.innerHTML;
+    try {
+        const produtosJSON = localStorage.getItem('carrinho_produtos');
+        if (!produtosJSON) {
+            reviewProductsList.innerHTML = '<p style="color: #6b7280; font-size: 12px;">Nenhum produto encontrado</p>';
+            return;
+        }
+
+        const produtos = JSON.parse(produtosJSON);
+        if (!Array.isArray(produtos) || produtos.length === 0) {
+            reviewProductsList.innerHTML = '<p style="color: #6b7280; font-size: 12px;">Carrinho vazio</p>';
+            return;
+        }
+
+        let html = '';
+        produtos.forEach(produto => {
+            const nome = produto.nome || produto.name || 'Produto';
+            const quantidade = produto.quantidade || produto.quantity || 1;
+            const preco = parseFloat(produto.preco || produto.price || 0);
+            const foto = produto.foto || produto.image || '';
+
+            const precoFormatado = preco.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+
+            const imagemHTML = foto ? `<img src="${foto}" alt="${nome}" onerror="this.parentElement.innerHTML='📦'">` : '📦';
+
+            html += `
+                <div class="review-product-item">
+                    <div class="review-product-image">
+                        ${imagemHTML}
+                    </div>
+                    <div class="review-product-info">
+                        <div class="review-product-name">${nome}</div>
+                        <div class="review-product-details">
+                            <span class="review-product-qty">Qtd: ${quantidade}</span>
+                            <span class="review-product-price">${precoFormatado}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        reviewProductsList.innerHTML = html;
+
+    } catch (error) {
+        console.error('Erro ao carregar produtos na revisão:', error);
+        reviewProductsList.innerHTML = '<p style="color: #ef4444; font-size: 12px;">Erro ao carregar produtos</p>';
+    }
 }
 
+/**
+ * Configura o espelhamento de produtos para a seção de revisão.
+ * Monitora tanto o localStorage quanto mudanças no DOM para garantir sincronia.
+ */
 function setupProductsMirror() {
-    const productsList = document.getElementById('productsList');
-    const reviewProductsList = document.getElementById('reviewProductsList');
-    
-    if (!productsList || !reviewProductsList) {
-        console.warn('Elementos productsList ou reviewProductsList nao encontrados');
-        return;
-    }
-    
-    const observer = new MutationObserver(function(mutations) {
-        reviewProductsList.innerHTML = productsList.innerHTML;
-        console.log('Produtos atualizados na secao de revisao');
+    // 1. Escutar mudanças no localStorage (útil se o carrinho mudar em outra aba)
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'carrinho_produtos') {
+            updateReviewProducts();
+        }
     });
-    
-    const config = {
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true
-    };
-    
-    observer.observe(productsList, config);
-    reviewProductsList.innerHTML = productsList.innerHTML;
-    console.log('Espelhamento de produtos ativado');
+
+    // 2. Monitorar o container de produtos da barra lateral (Desktop)
+    const productsListDesktop = document.getElementById('productsListDesktop') || document.getElementById('productsList');
+    if (productsListDesktop) {
+        const observer = new MutationObserver(() => {
+            updateReviewProducts();
+        });
+        observer.observe(productsListDesktop, { childList: true, subtree: true });
+    }
+
+    // 3. Monitorar o container de produtos mobile
+    const productsListMobile = document.getElementById('productsListMobile');
+    if (productsListMobile) {
+        const observer = new MutationObserver(() => {
+            updateReviewProducts();
+        });
+        observer.observe(productsListMobile, { childList: true, subtree: true });
+    }
+
+    // Carregamento inicial
+    updateReviewProducts();
 }
 
 function goToStep(step) {
