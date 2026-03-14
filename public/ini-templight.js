@@ -773,117 +773,17 @@ function updateReviewData() {
 }
 
 /**
- * Função para atualizar os produtos na seção de revisão
- * Busca os produtos do localStorage (tentando múltiplas chaves) e exibe na seção de revisão
+ * Função para duplicar os produtos do Resumo do Pedido para a seção de Revisão
+ * Copia diretamente o HTML dos produtos da barra lateral
  */
 function updateReviewProducts() {
     const reviewProductsList = document.getElementById('reviewProductsList');
-    if (!reviewProductsList) return;
-
-    // Limpar lista anterior
-    reviewProductsList.innerHTML = '';
-
-    // Buscar produtos do localStorage - tentar múltiplas chaves possíveis
-    let products = [];
-    const possibleKeys = ['cartProducts', 'cart', 'products', 'items', 'cartItems', 'cart_items', 'produtos', 'itens'];
+    const productsList = document.getElementById('productsList');
     
-    try {
-        // Tentar chaves conhecidas
-        for (let key of possibleKeys) {
-            const storedProducts = localStorage.getItem(key);
-            if (storedProducts) {
-                try {
-                    const parsed = JSON.parse(storedProducts);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        products = parsed;
-                        console.log('Produtos encontrados em localStorage com chave:', key);
-                        break;
-                    }
-                } catch (e) {
-                    console.log('Erro ao fazer parse da chave', key);
-                }
-            }
-        }
-        
-        // Se ainda não encontrou, tentar todas as chaves do localStorage
-        if (products.length === 0) {
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                try {
-                    const value = localStorage.getItem(key);
-                    const parsed = JSON.parse(value);
-                    if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name) {
-                        products = parsed;
-                        console.log('Produtos encontrados em localStorage com chave dinâmica:', key);
-                        break;
-                    }
-                } catch (e) {
-                    // Ignorar valores que não são JSON válido
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao buscar produtos do localStorage:', error);
-    }
+    if (!reviewProductsList || !productsList) return;
 
-    // Se não houver produtos no localStorage, tentar buscar do elemento productsList (DOM)
-    if (products.length === 0) {
-        console.log('Tentando buscar produtos do DOM...');
-        const productsList = document.getElementById('productsList');
-        if (productsList) {
-            const productItems = productsList.querySelectorAll('.product-item');
-            console.log('Encontrados', productItems.length, 'itens no DOM');
-            
-            productItems.forEach(item => {
-                const nameEl = item.querySelector('.product-name');
-                const priceEl = item.querySelector('.product-price');
-                const qtyEl = item.querySelector('.product-qty');
-                const imageEl = item.querySelector('.product-image');
-
-                if (nameEl && priceEl) {
-                    const product = {
-                        name: nameEl.textContent.trim(),
-                        price: priceEl.textContent.trim(),
-                        qty: qtyEl ? qtyEl.textContent.trim() : '1',
-                        image: imageEl ? imageEl.innerHTML : '📦'
-                    };
-                    products.push(product);
-                    console.log('Produto adicionado:', product.name);
-                }
-            });
-        }
-    }
-
-    // Exibir produtos na seção de revisão
-    if (products.length > 0) {
-        console.log('Exibindo', products.length, 'produtos na seção de revisão');
-        products.forEach(product => {
-            // Garantir que os dados do produto estejam corretos
-            const productName = product.name || product.title || 'Produto';
-            const productPrice = product.price || product.valor || 'R$ 0,00';
-            const productQty = product.qty || product.quantity || product.qtd || '1';
-            const productImage = product.image || product.img || product.imagem || '📦';
-            
-            const productHTML = `
-                <div class="review-product-item">
-                    <div class="review-product-image">
-                        ${typeof productImage === 'string' && productImage.includes('img') ? productImage : '📦'}
-                    </div>
-                    <div class="review-product-info">
-                        <div class="review-product-name">${productName}</div>
-                        <div class="review-product-details">
-                            <span class="review-product-qty">${productQty}</span>
-                            <span class="review-product-price">${productPrice}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            reviewProductsList.innerHTML += productHTML;
-        });
-    } else {
-        console.warn('Nenhum produto encontrado em localStorage ou DOM');
-        reviewProductsList.innerHTML = '<p style="color: #6b7280; font-size: 12px;">Nenhum produto adicionado</p>';
-    }
+    // Duplicar o conteúdo HTML dos produtos da barra lateral para a seção de revisão
+    reviewProductsList.innerHTML = productsList.innerHTML;
 }
 
 function goToStep(step) {
