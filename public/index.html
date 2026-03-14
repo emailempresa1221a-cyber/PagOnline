@@ -471,47 +471,31 @@
     opacity: 0.6;
 }
 
-  /* 1. Ajuste no container (pai) do produto */
-.product-item { /* Substitua pela classe real do seu card de produto */
-  display: flex;
-  flex-direction: column;
+ .product-name::after {
+    content: "OFERTA ESPECIAL";
+    display: inline-flex;
+    align-items: center;
+    
+    /* Cores sóbrias: Fundo cinza azulado suave com texto profundo */
+    background-color: #f1f5f9; /* Slate 100 - Profissional e limpo */
+    color: #475569;            /* Slate 600 - Excelente legibilidade e sobriedade */
+    border: 1px solid #e2e8f0; /* Borda sutil para definição */
+    
+    /* Tipografia Refinada */
+    font-size: 9px;            /* Ligeiramente menor para parecer mais "luxuoso" */
+    font-weight: 600;
+    letter-spacing: 0.12em;    /* Mais espaçamento entre letras para um ar chic */
+    text-transform: uppercase;
+    
+    /* Design Ultra-Arredondado */
+    padding: 2px 12px;
+    border-radius: 50px;       /* Bordas totalmente redondas (formato pílula) */
+    margin-top: 10px;
+    width: fit-content;
+    
+    /* Refinamento Visual */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03); /* Sombra quase imperceptível */
 }
-
-/* 2. O nome do produto continua no topo */
-.product-name {
-  order: 1; 
-  display: block;
-}
-
-/* 3. O elemento de quantidade/preço deve ter ordem intermediária */
-.product-quantity { /* Substitua pela classe da sua quantidade */
-  order: 2;
-}
-
-/* 4. A etiqueta de promoção agora vai para o final */
-.product-name::after {
-  content: "OFERTA ESPECIAL";
-  order: 3; /* Move para o fim da lista flex */
-  
-  display: inline-flex;
-  align-items: center;
-  
-  /* Verde Profissional e Leve */
-  background-color: #ecfdf5;
-  color: #059669;
-  border: 1px solid #d1fae5;
-  
-  /* Design */
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: 4px;
-  margin-top: 12px; /* Mais espaço para não sufocar a quantidade */
-  width: fit-content;
-}
-
 
 
 </style>
