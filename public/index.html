@@ -852,8 +852,9 @@
                             </div>
                             
                             <!-- Seção Produtos -->
-                            <div class="review-section-group" style="margin-top: 8px;">
+                            <div class="review-section-group" style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
                                 <div class="review-section-title">Produtos</div>
+                                <button type="button" onclick="syncProductsToReview()" style="background: none; border: none; color: #3b82f6; font-size: 11px; cursor: pointer; text-decoration: underline;">Atualizar</button>
                             </div>
                             <div style="grid-column: 1 / -1;">
                                 <div class="review-products-list" id="reviewProductsList">
@@ -1462,7 +1463,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /**
      * Funcao para sincronizar produtos entre #productsList e #reviewProductsList
-     * Esta funcao observa mudancas no #productsList e replica para #reviewProductsList
      */
     function syncProductsToReview() {
         const sourceList = document.getElementById('productsList');
@@ -1470,21 +1470,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!sourceList || !reviewList) return;
         
-        // Clonar todos os produtos do productsList
+        // Tentar buscar os itens de produto
         const products = sourceList.querySelectorAll('.product-item');
         
-        // Limpar a lista de revisao
+        // Se nao houver produtos ainda, nao limpa para nao remover o que pode estar sendo carregado
+        if (products.length === 0) {
+            // Se a lista de origem estiver vazia mas tiver HTML (talvez carregando), 
+            // podemos tentar extrair de outra forma ou apenas aguardar
+            return;
+        }
+        
+        // Limpar a lista de revisao apenas se encontramos produtos na origem
         reviewList.innerHTML = '';
         
-        // Iterar sobre cada produto e criar versao para a revisao
         products.forEach(product => {
-            // Extrair informacoes do produto
-            const productName = product.querySelector('.product-name')?.textContent || '';
-            const productPrice = product.querySelector('.product-price')?.textContent || '';
-            const productQty = product.querySelector('.product-qty')?.textContent || '';
+            const productName = product.querySelector('.product-name')?.innerText || '';
+            const productPrice = product.querySelector('.product-price')?.innerText || '';
+            const productQty = product.querySelector('.product-qty')?.innerText || '';
             const productImage = product.querySelector('.product-image')?.innerHTML || '';
             
-            // Criar elemento de produto para a revisao
             const reviewProductItem = document.createElement('div');
             reviewProductItem.className = 'review-product-item';
             reviewProductItem.innerHTML = `
@@ -1499,39 +1503,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-            
             reviewList.appendChild(reviewProductItem);
         });
     }
     
     /**
-     * Observador para detectar mudancas no #productsList
+     * Configura observadores e intervalos para garantir a sincronizacao
      */
-    function setupProductsObserver() {
+    function setupProductsSync() {
         const productsList = document.getElementById('productsList');
-        
         if (!productsList) return;
-        
-        // Sincronizar imediatamente
+
+        // 1. Sincronizacao inicial
         syncProductsToReview();
-        
-        // Criar um MutationObserver para monitorar mudancas
+
+        // 2. MutationObserver para mudancas no DOM
         const observer = new MutationObserver(() => {
             syncProductsToReview();
         });
-        
-        // Configurar o observador para monitorar mudancas no DOM
-        observer.observe(productsList, {
-            childList: true,
-            subtree: true,
-            characterData: true
-        });
+        observer.observe(productsList, { childList: true, subtree: true, characterData: true });
+
+        // 3. Intervalo de seguranca (caso o observer falhe em algum script externo)
+        let syncAttempts = 0;
+        const syncInterval = setInterval(() => {
+            syncProductsToReview();
+            syncAttempts++;
+            // Para o intervalo apos 10 segundos para economizar recursos
+            if (syncAttempts > 20) clearInterval(syncInterval);
+        }, 500);
+
+        // 4. Sincronizar ao abrir a secao de revisao
+        const reviewHeader = document.querySelector('.review-header');
+        if (reviewHeader) {
+            reviewHeader.addEventListener('click', () => {
+                setTimeout(syncProductsToReview, 100);
+            });
+        }
     }
     
-    // Executar quando o DOM estiver pronto
-    document.addEventListener('DOMContentLoaded', function() {
-        setupProductsObserver();
-    });
+    // Inicializacao multipla para garantir execucao
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupProductsSync);
+    } else {
+        setupProductsSync();
+    }
+    
+    // Backup para garantir que rode mesmo apos scripts externos
+    window.addEventListener('load', setupProductsSync);
 </script>
 
 
