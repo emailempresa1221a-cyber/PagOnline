@@ -777,6 +777,16 @@
                                 <div class="review-item-label">Prazo Estimado</div>
                                 <div class="review-item-value" id="reviewShippingTime">-</div>
                             </div>
+
+                            <!-- Seção Produtos (Nova) -->
+                            <div class="review-section-group" style="margin-top: 16px; grid-column: 1 / -1;">
+                                <div class="review-section-title">Produtos do Pedido</div>
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <div id="reviewProductsList" class="products-list" style="margin-top: 10px; max-height: none; overflow: visible; padding-right: 0;">
+                                    <!-- Os produtos serão sincronizados aqui -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1342,11 +1352,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /**
+     * Função para sincronizar os produtos com a seção de revisão
+     */
+    function syncReviewProducts() {
+        const sourceList = document.getElementById('productsList');
+        const targetList = document.getElementById('reviewProductsList');
+        
+        if (sourceList && targetList) {
+            // Sincroniza o conteúdo HTML
+            targetList.innerHTML = sourceList.innerHTML;
+            
+            // Opcional: Se houver lógica de MutationObserver no script.js para o productsList,
+            // podemos adicionar um observer aqui também para manter sincronizado em tempo real
+            const observer = new MutationObserver(() => {
+                targetList.innerHTML = sourceList.innerHTML;
+            });
+            
+            observer.observe(sourceList, { childList: true, subtree: true, characterData: true });
+        }
+    }
+
+    /**
      * Inicializa o script quando o DOM está pronto
      */
     document.addEventListener('DOMContentLoaded', function() {
         setupPaymentMethodListeners();
         updatePaymentButtonState(); // Define o estado inicial do botão
+        syncReviewProducts(); // Sincroniza os produtos inicialmente
     });
 
     // Funções auxiliares (manter as existentes ou adicionar se necessário)
