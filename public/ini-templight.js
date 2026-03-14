@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartDisplay();
     initializeProgressiveFlow();
     initializePaymentMethod();
+    setupProductsMirror();
 
     // Configurar teclado numérico para campos específicos
     const numericFields = ['cpf', 'zipCode', 'phone'];
@@ -782,8 +783,34 @@ function updateReviewProducts() {
     
     if (!reviewProductsList || !productsList) return;
 
-    // Duplicar o conteúdo HTML dos produtos da barra lateral para a seção de revisão
+    // Duplicar o conteudo HTML dos produtos da barra lateral para a secao de revisao
     reviewProductsList.innerHTML = productsList.innerHTML;
+}
+
+function setupProductsMirror() {
+    const productsList = document.getElementById('productsList');
+    const reviewProductsList = document.getElementById('reviewProductsList');
+    
+    if (!productsList || !reviewProductsList) {
+        console.warn('Elementos productsList ou reviewProductsList nao encontrados');
+        return;
+    }
+    
+    const observer = new MutationObserver(function(mutations) {
+        reviewProductsList.innerHTML = productsList.innerHTML;
+        console.log('Produtos atualizados na secao de revisao');
+    });
+    
+    const config = {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true
+    };
+    
+    observer.observe(productsList, config);
+    reviewProductsList.innerHTML = productsList.innerHTML;
+    console.log('Espelhamento de produtos ativado');
 }
 
 function goToStep(step) {
