@@ -748,19 +748,20 @@
                                 <div class="review-item-label">Prazo Estimado</div>
                                 <div class="review-item-value" id="reviewShippingTime">-</div>
                             </div>
-
-                            <!-- Seção Produtos do Pedido -->
-                            <div class="review-section-group" style="margin-top: 8px;" id="reviewProductsGroup">
-                                <div class="review-section-title">Produtos do Pedido</div>
-                            </div>
-                            <div style="grid-column: 1 / -1;" id="reviewProductsContainer">
-                                <div id="reviewProductsList" style="display:flex;flex-direction:column;">
-                                    <!-- Produtos preenchidos via JS -->
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
+
+              <!-- Seção Produtos do Pedido -->
+<div class="review-section-group" style="margin-top: 8px;" id="reviewProductsGroup">
+    <div class="review-section-title">Produtos do Pedido</div>
+</div>
+<div style="grid-column: 1 / -1;" id="reviewProductsContainer">
+    <div id="reviewProductsList" style="display:flex;flex-direction:column;">
+        <!-- Produtos preenchidos via JS -->
+    </div>
+</div>
+
 
                 <!-- Aviso sobre correção do CORS -->
                 <div class="cors-fix-notice">
@@ -1329,6 +1330,88 @@ document.addEventListener('DOMContentLoaded', function() {
         setupPaymentMethodListeners();
         updatePaymentButtonState(); // Define o estado inicial do botão
     });
+
+    /**
+ * Renderiza os produtos do localStorage na seção "Revisar Informações"
+ */
+function renderReviewProducts() {
+    var reviewProductsList = document.getElementById('reviewProductsList');
+    var reviewProductsGroup = document.getElementById('reviewProductsGroup');
+    var reviewProductsContainer = document.getElementById('reviewProductsContainer');
+    if (!reviewProductsList) return;
+
+    // Chaves comuns usadas para armazenar o carrinho
+    var possibleKeys = ['produtos', 'products', 'cartProducts', 'cartItems', 'cart', 'pedido', 'items'];
+    var produtos = null;
+
+    // 1. Tenta chaves conhecidas
+    for (var k = 0; k < possibleKeys.length; k++) {
+        var raw = localStorage.getItem(possibleKeys[k]);
+        if (raw) {
+            try {
+                var parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    produtos = parsed;
+                    break;
+                }
+            } catch (e) {}
+        }
+    }
+
+    // 2. Se não achou, varre o localStorage por qualquer array que pareça um produto
+    if (!produtos) {
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            try {
+                var rawItem = localStorage.getItem(key);
+                var parsedItem = JSON.parse(rawItem);
+                if (Array.isArray(parsedItem) && parsedItem.length > 0) {
+                    var first = parsedItem[0];
+                    if (first && (first.nome || first.name || first.title)) {
+                        produtos = parsedItem;
+                        break;
+                    }
+                }
+            } catch (e) {}
+        }
+    }
+
+    // Oculta se não houver produtos, exibe se houver
+    var displayStyle = (!produtos || produtos.length === 0) ? 'none' : '';
+    if (reviewProductsGroup) reviewProductsGroup.style.display = displayStyle;
+    if (reviewProductsContainer) reviewProductsContainer.style.display = displayStyle;
+    if (!produtos) return;
+
+    // Renderiza os itens
+    reviewProductsList.innerHTML = '';
+    for (var j = 0; j < produtos.length; j++) {
+        var p = produtos[j];
+        var nome = p.nome || p.name || p.title || 'Produto';
+        var qtd = parseInt(p.quantidade || p.quantity || 1);
+        var preco = parseFloat(p.preco || p.price || p.valor || 0);
+        var foto = p.foto || p.image || p.img || p.imagem || '';
+        var sub = (preco * qtd).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        var unit = preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        var item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9;';
+        
+        var imgHTML = foto 
+            ? '<img src="'+foto+'" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;flex-shrink:0;" onerror="this.style.display=\'none\'">'
+            : '<div style="width:52px;height:52px;border-radius:6px;border:1px solid #e5e7eb;background:#f9fafb;flex-shrink:0;"></div>';
+
+        item.innerHTML = imgHTML + 
+            '<div style="flex:1;min-width:0;">' +
+                '<div style="font-size:13px;font-weight:600;color:#0f172a;line-height:1.3;word-break:break-word;">' + nome + '</div>' +
+                '<div style="font-size:12px;color:#64748b;margin-top:3px;">Qtd: ' + qtd + ' &times; ' + unit + '</div>' +
+            '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#0f172a;white-space:nowrap;padding-left:8px;">' + sub + '</div>';
+        
+        reviewProductsList.appendChild(item);
+    }
+    if (reviewProductsList.lastElementChild) reviewProductsList.lastElementChild.style.borderBottom = 'none';
+}
+
 
     // Funções auxiliares (manter as existentes ou adicionar se necessário)
     function goToStep(step) {
