@@ -471,30 +471,29 @@
     opacity: 0.6;
 }
 
- .product-name::after {
+.product-name::after {
     content: "OFERTA ESPECIAL";
     display: inline-flex;
-    align-items: center;
     
-    /* Paleta: Azul Marinho "Navy" Profissional */
-    background-color: #f0f4f8; /* Azul gelo muito suave (quase cinza) */
-    color: #1e3a8a;            /* Azul Marinho profundo (Navy 900) */
-    border: 1px solid #d1d5db; /* Cinza médio para estrutura séria */
+    /* Cores Sólidas e Sóbrias */
+    background-color: #0f172a; /* Slate 900: Azul quase preto, extremamente sério */
+    color: #ffffff;            /* Branco puro */
     
-    /* Tipografia de Alta Precisão */
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.15em;    /* Mais espaço entre letras = mais luxo/exclusividade */
+    /* Tipografia Minimalista */
+    font-size: 8px;            /* Menor para não gritar na interface */
+    font-weight: 600;
+    letter-spacing: 0.18em;    /* Espaçamento generoso (marca de luxo) */
     text-transform: uppercase;
     
-    /* Design Ultra-Arredondado (Pill Style) */
-    padding: 3px 14px;
-    border-radius: 99px;       /* Bordas totalmente circulares para suavidade */
-    margin-top: 10px;
+    /* Design Pill (Pílula) */
+    padding: 2px 10px;         /* Padding reduzido para um badge fino */
+    border-radius: 99px;       /* Totalmente arredondado */
+    margin-top: 6px;
     width: fit-content;
     
-    /* Acabamento Premium */
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    /* Remoção de Ruído Visual */
+    border: none;
+    box-shadow: none;          /* Sem sombras para um visual flat/limpo */
 }
 
 
