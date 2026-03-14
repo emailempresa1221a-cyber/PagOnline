@@ -172,79 +172,6 @@
         color: #9ca3af;
     }
 
-    /* Estilos para produtos na seção de revisão */
-    .review-products-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        margin-top: 12px;
-    }
-
-    .review-product-item {
-        display: flex;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid #e5e7eb;
-        align-items: flex-start;
-    }
-
-    .review-product-item:last-child {
-        border-bottom: none;
-    }
-
-    .review-product-image {
-        width: 50px;
-        height: 50px;
-        min-width: 50px;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        overflow: hidden;
-    }
-
-    .review-product-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .review-product-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .review-product-name {
-        font-weight: 600;
-        color: #111827;
-        font-size: 12px;
-        line-height: 1.3;
-        margin-bottom: 4px;
-    }
-
-    .review-product-details {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .review-product-qty {
-        font-size: 11px;
-        color: #6b7280;
-    }
-
-    .review-product-price {
-        font-weight: 700;
-        color: #111827;
-        font-size: 12px;
-    }
-
     /* ============================================
        ESTILOS PARA REVELAÇÃO PROGRESSIVA
        ============================================ */
@@ -850,17 +777,6 @@
                                 <div class="review-item-label">Prazo Estimado</div>
                                 <div class="review-item-value" id="reviewShippingTime">-</div>
                             </div>
-                            
-                            <!-- Seção Produtos -->
-                            <div class="review-section-group" style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
-                                <div class="review-section-title">Produtos</div>
-                                <button type="button" onclick="syncProductsToReview()" style="background: none; border: none; color: #3b82f6; font-size: 11px; cursor: pointer; text-decoration: underline;">Atualizar</button>
-                            </div>
-                            <div style="grid-column: 1 / -1;">
-                                <div class="review-products-list" id="reviewProductsList">
-                                    <!-- Os produtos serão inseridos aqui via JavaScript -->
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1460,120 +1376,8 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Digite um cupom válido');
         }
     }
-
-    /**
-     * Funcao para sincronizar produtos entre #productsList e #reviewProductsList
-     * Versao Ultra-Robusta
-     */
-    function syncProductsToReview() {
-        const sourceList = document.getElementById('productsList');
-        const reviewList = document.getElementById('reviewProductsList');
-        
-        if (!sourceList || !reviewList) {
-            console.warn('Elementos de lista nao encontrados');
-            return;
-        }
-        
-        // Tentar buscar itens de produto por classe ou por qualquer div filha se a classe falhar
-        let products = sourceList.querySelectorAll('.product-item');
-        if (products.length === 0) {
-            // Fallback: se nao achar .product-item, tenta pegar qualquer div que pareça um produto
-            products = Array.from(sourceList.children).filter(child => 
-                child.innerHTML.includes('product') || child.className.includes('product')
-            );
-        }
-        
-        if (products.length === 0) {
-            // Se ainda estiver vazio, verifica se o proprio sourceList tem o HTML dos produtos
-            if (sourceList.innerHTML.trim() !== "" && !sourceList.querySelector('.product-item')) {
-                // Caso os produtos estejam injetados mas sem a classe esperada no momento da captura
-                reviewList.innerHTML = sourceList.innerHTML;
-                return;
-            }
-            return;
-        }
-        
-        // Limpar e reconstruir com estrutura limpa
-        reviewList.innerHTML = '';
-        
-        products.forEach(product => {
-            try {
-                const productName = product.querySelector('.product-name')?.innerText || 
-                                  product.querySelector('h4')?.innerText || 
-                                  'Produto';
-                const productPrice = product.querySelector('.product-price')?.innerText || 
-                                   product.querySelector('span:last-child')?.innerText || 
-                                   '';
-                const productQty = product.querySelector('.product-qty')?.innerText || 
-                                 '1';
-                const productImage = product.querySelector('.product-image')?.innerHTML || 
-                                   product.querySelector('img')?.outerHTML || 
-                                   '📦';
-                
-                const reviewProductItem = document.createElement('div');
-                reviewProductItem.className = 'review-product-item';
-                reviewProductItem.style.cssText = 'display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #e5e7eb; align-items:flex-start;';
-                reviewProductItem.innerHTML = `
-                    <div class="review-product-image" style="width:50px; height:50px; min-width:50px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:4px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                        ${productImage}
-                    </div>
-                    <div class="review-product-info" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-                        <div class="review-product-name" style="font-weight:600; color:#111827; font-size:12px; line-height:1.3; margin-bottom:4px;">${productName}</div>
-                        <div class="review-product-details" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                            <span class="review-product-qty" style="font-size:11px; color:#6b7280;">${productQty}</span>
-                            <span class="review-product-price" style="font-weight:700; color:#111827; font-size:12px;">${productPrice}</span>
-                        </div>
-                    </div>
-                `;
-                reviewList.appendChild(reviewProductItem);
-            } catch (e) {
-                console.error('Erro ao processar produto individual:', e);
-            }
-        });
-    }
-    
-    /**
-     * Configura observadores e intervalos persistentes
-     */
-    function setupProductsSync() {
-        // Tentar rodar a cada 1 segundo indefinidamente (baixo custo)
-        // Isso garante que mesmo que scripts externos limpem ou recriem o DOM, a gente recupere
-        setInterval(syncProductsToReview, 1000);
-        
-        // Rodar imediatamente
-        syncProductsToReview();
-        
-        // Observar o body inteiro se necessario, pois o productsList pode ser recriado
-        const observer = new MutationObserver((mutations) => {
-            syncProductsToReview();
-        });
-        
-        observer.observe(document.body, { 
-            childList: true, 
-            subtree: true 
-        });
-    }
-    
-    // Inicializacao agressiva
-    setupProductsSync();
-    window.addEventListener('load', syncProductsToReview);
-    document.addEventListener('DOMContentLoaded', syncProductsToReview);
 </script>
 
-<!-- Script de seguranca final para garantir execucao apos todos os outros scripts -->
-<script>
-    (function() {
-        var checkExist = setInterval(function() {
-            var source = document.getElementById('productsList');
-            if (source && source.innerHTML.trim().length > 0) {
-                if (typeof syncProductsToReview === 'function') {
-                    syncProductsToReview();
-                    // Nao limpamos o intervalo para garantir que mudancas dinamicas continuem sendo capturadas
-                }
-            }
-        }, 1000);
-    })();
-</script>
 
 </body>
 
