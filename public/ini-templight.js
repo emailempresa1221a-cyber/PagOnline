@@ -767,6 +767,78 @@ function updateReviewData() {
         document.getElementById('reviewShippingMethod').textContent = title;
         document.getElementById('reviewShippingTime').textContent = time;
     }
+
+    // Atualizar produtos na seção de revisão
+    updateReviewProducts();
+}
+
+/**
+ * Função para atualizar os produtos na seção de revisão
+ * Busca os produtos do localStorage e exibe na seção de revisão
+ */
+function updateReviewProducts() {
+    const reviewProductsList = document.getElementById('reviewProductsList');
+    if (!reviewProductsList) return;
+
+    // Limpar lista anterior
+    reviewProductsList.innerHTML = '';
+
+    // Buscar produtos do localStorage
+    let products = [];
+    try {
+        const storedProducts = localStorage.getItem('cartProducts');
+        if (storedProducts) {
+            products = JSON.parse(storedProducts);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar produtos do localStorage:', error);
+    }
+
+    // Se não houver produtos no localStorage, tentar buscar do elemento productsList
+    if (products.length === 0) {
+        const productsList = document.getElementById('productsList');
+        if (productsList) {
+            const productItems = productsList.querySelectorAll('.product-item');
+            productItems.forEach(item => {
+                const nameEl = item.querySelector('.product-name');
+                const priceEl = item.querySelector('.product-price');
+                const qtyEl = item.querySelector('.product-qty');
+                const imageEl = item.querySelector('.product-image');
+
+                if (nameEl && priceEl) {
+                    products.push({
+                        name: nameEl.textContent.trim(),
+                        price: priceEl.textContent.trim(),
+                        qty: qtyEl ? qtyEl.textContent.trim() : '1',
+                        image: imageEl ? imageEl.innerHTML : '📦'
+                    });
+                }
+            });
+        }
+    }
+
+    // Exibir produtos na seção de revisão
+    if (products.length > 0) {
+        products.forEach(product => {
+            const productHTML = `
+                <div class="review-product-item">
+                    <div class="review-product-image">
+                        ${product.image && product.image.includes('img') ? product.image : '📦'}
+                    </div>
+                    <div class="review-product-info">
+                        <div class="review-product-name">${product.name || 'Produto'}</div>
+                        <div class="review-product-details">
+                            <span class="review-product-qty">${product.qty || '1'}</span>
+                            <span class="review-product-price">${product.price || 'R$ 0,00'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            reviewProductsList.innerHTML += productHTML;
+        });
+    } else {
+        reviewProductsList.innerHTML = '<p style="color: #6b7280; font-size: 12px;">Nenhum produto adicionado</p>';
+    }
 }
 
 function goToStep(step) {
