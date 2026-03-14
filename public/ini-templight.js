@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCartDisplay();
     initializeProgressiveFlow();
     initializePaymentMethod();
-    setupProductsMirror();
 
     // Configurar teclado numérico para campos específicos
     const numericFields = ['cpf', 'zipCode', 'phone'];
@@ -769,135 +768,105 @@ function updateReviewData() {
         document.getElementById('reviewShippingTime').textContent = time;
     }
 
-    // Atualizar produtos na seção de revisão
-    updateReviewProducts();
+    // Produtos do localStorage na seção de revisão
+    renderReviewProducts();
 }
 
 /**
-function updateReviewProducts() {
-    const reviewProductsList = document.getElementById('reviewProductsList');
+ * Renderiza os produtos do localStorage na seção "Revisar Informações"
+ */
+function renderReviewProducts() {
+    var reviewProductsList = document.getElementById('reviewProductsList');
+    var reviewProductsGroup = document.getElementById('reviewProductsGroup');
+    var reviewProductsContainer = document.getElementById('reviewProductsContainer');
     if (!reviewProductsList) return;
 
-    try {
-        const produtosJSON = localStorage.getItem('carrinho_produtos');
-        if (!produtosJSON) {
-            reviewProductsList.innerHTML = '<p style="color: #6b7280; font-size: 12px;">Nenhum produto encontrado</p>';
-            return;
+    // Chaves possíveis usadas pelo script de produtos
+    var possibleKeys = ['produtos', 'products', 'cartProducts', 'cartItems', 'cart', 'pedido', 'items'];
+    var produtos = null;
+
+    for (var k = 0; k < possibleKeys.length; k++) {
+        var raw = localStorage.getItem(possibleKeys[k]);
+        if (raw) {
+            try {
+                var parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    produtos = parsed;
+                    break;
+                }
+            } catch (e) { /* ignora */ }
         }
+    }
 
-        const produtos = JSON.parse(produtosJSON);
-        if (!Array.isArray(produtos) || produtos.length === 0) {
-            reviewProductsList.innerHTML = '<p style="color: #6b7280; font-size: 12px;">Carrinho vazio</p>';
-            return;
-        }
-
-        let html = '';
-        produtos.forEach((produto, index) => {
-            const nome = produto.nome || produto.name || 'Produto';
-            const quantidade = produto.quantidade || produto.quantity || 1;
-            const foto = produto.foto || produto.image || '';
-
-            // Tentar extrair o preco de multiplos campos possiveis
-            let preco = produto.preco || produto.price || produto.valor || produto.subtotal || 0;
-            
-            // Se nao encontrou preco no objeto, tentar capturar do DOM (barra lateral)
-            if (!preco || preco === 0) {
-                const productsListDesktop = document.getElementById('productsListDesktop');
-                const productsListMobile = document.getElementById('productsListMobile');
-                const productsList = document.getElementById('productsList');
-                
-                let container = productsListDesktop || productsListMobile || productsList;
-                if (container) {
-                    const items = container.querySelectorAll('.product-item');
-                    if (items[index]) {
-                        const priceElement = items[index].querySelector('.product-price');
-                        if (priceElement) {
-                            const priceText = priceElement.textContent.trim();
-                            // Extrair numero da string (ex: "R$ 29,90" -> 29.90)
-                            const match = priceText.match(/[\d,]+\.?[\d]*/);
-                            if (match) {
-                                preco = parseFloat(match[0].replace(',', '.'));
-                            }
-                        }
+    // Percorre todas as chaves do localStorage procurando arrays de produtos
+    if (!produtos) {
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            try {
+                var rawItem = localStorage.getItem(key);
+                var parsedItem = JSON.parse(rawItem);
+                if (Array.isArray(parsedItem) && parsedItem.length > 0) {
+                    var first = parsedItem[0];
+                    if (first && (first.nome || first.name || first.title) &&
+                        (first.preco !== undefined || first.price !== undefined)) {
+                        produtos = parsedItem;
+                        break;
                     }
                 }
-            }
-
-            // Converter para numero se for string
-            if (typeof preco === 'string') {
-                preco = parseFloat(preco.replace(',', '.'));
-            } else {
-                preco = parseFloat(preco);
-            }
-
-            // Se invalido, usar 0
-            if (isNaN(preco)) {
-                preco = 0;
-            }
-
-            const precoFormatado = preco.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
-
-            const imagemHTML = foto ? `<img src="${foto}" alt="${nome}" onerror="this.parentElement.innerHTML='📦'">` : '📦';
-
-            html += `
-                <div class="review-product-item">
-                    <div class="review-product-image">
-                        ${imagemHTML}
-                    </div>
-                    <div class="review-product-info">
-                        <div class="review-product-name">${nome}</div>
-                        <div class="review-product-details">
-                            <span class="review-product-qty">Qtd: ${quantidade}</span>
-                            <span class="review-product-price">${precoFormatado}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        reviewProductsList.innerHTML = html;
-
-    } catch (error) {
-        console.error('Erro ao carregar produtos na revisao:', error);
-        reviewProductsList.innerHTML = '<p style="color: #ef4444; font-size: 12px;">Erro ao carregar produtos</p>';
+            } catch (e) { /* ignora */ }
+        }
     }
+
+    if (!produtos || produtos.length === 0) {
+        if (reviewProductsGroup) reviewProductsGroup.style.display = 'none';
+        if (reviewProductsContainer) reviewProductsContainer.style.display = 'none';
+        return;
+    }
+
+    // Exibe a seção
+    if (reviewProductsGroup) reviewProductsGroup.style.display = '';
+    if (reviewProductsContainer) reviewProductsContainer.style.display = '';
+
+    // Renderiza os produtos
+    reviewProductsList.innerHTML = '';
+
+    for (var j = 0; j < produtos.length; j++) {
+        var produto = produtos[j];
+        var nome = produto.nome || produto.name || produto.title || 'Produto';
+        var quantidade = parseInt(produto.quantidade || produto.quantity || 1);
+        var preco = parseFloat(produto.preco || produto.price || produto.valor || 0);
+        var foto = produto.foto || produto.image || produto.img || produto.imagem || '';
+        var subtotal = preco * quantidade;
+
+        var precoFormatado = preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        var subtotalFormatado = subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        var item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9;';
+
+        var imgHTML = foto
+            ? '<img src="' + sanitizeReviewHTML(foto) + '" alt="" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;flex-shrink:0;" onerror="this.style.display=\'none\'">'
+            : '<div style="width:52px;height:52px;border-radius:6px;border:1px solid #e5e7eb;background:#f9fafb;flex-shrink:0;"></div>';
+
+        item.innerHTML = imgHTML +
+            '<div style="flex:1;min-width:0;">' +
+                '<div style="font-size:13px;font-weight:600;color:#0f172a;line-height:1.3;word-break:break-word;">' + sanitizeReviewHTML(nome) + '</div>' +
+                '<div style="font-size:12px;color:#64748b;margin-top:3px;">Qtd: ' + quantidade + ' &times; ' + precoFormatado + '</div>' +
+            '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#0f172a;white-space:nowrap;padding-left:8px;">' + subtotalFormatado + '</div>';
+
+        reviewProductsList.appendChild(item);
+    }
+
+    // Remove borda do último item
+    var lastItem = reviewProductsList.lastElementChild;
+    if (lastItem) lastItem.style.borderBottom = 'none';
 }
 
-/**
- * Configura o espelhamento de produtos para a seção de revisão.
- * Monitora tanto o localStorage quanto mudanças no DOM para garantir sincronia.
- */
-function setupProductsMirror() {
-    // 1. Escutar mudanças no localStorage (útil se o carrinho mudar em outra aba)
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'carrinho_produtos') {
-            updateReviewProducts();
-        }
-    });
-
-    // 2. Monitorar o container de produtos da barra lateral (Desktop)
-    const productsListDesktop = document.getElementById('productsListDesktop') || document.getElementById('productsList');
-    if (productsListDesktop) {
-        const observer = new MutationObserver(() => {
-            updateReviewProducts();
-        });
-        observer.observe(productsListDesktop, { childList: true, subtree: true });
-    }
-
-    // 3. Monitorar o container de produtos mobile
-    const productsListMobile = document.getElementById('productsListMobile');
-    if (productsListMobile) {
-        const observer = new MutationObserver(() => {
-            updateReviewProducts();
-        });
-        observer.observe(productsListMobile, { childList: true, subtree: true });
-    }
-
-    // Carregamento inicial
-    updateReviewProducts();
+function sanitizeReviewHTML(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function goToStep(step) {
@@ -1725,3 +1694,474 @@ function applyCoupon() {
         alert('Cupom inválido');
     }
 }
+
+
+CÓDIGO QUE OS PRODUTOS SAO PUXADOS:
+
+/**
+ * Script Final para Carregar Produtos no Resumo do Pedido
+ * Funciona em Desktop e Mobile com detecção melhorada
+ */
+
+(function() {
+    'use strict';
+
+    // Configuração
+    const CONFIG = {
+        storageKey: 'carrinho_produtos',
+        maxRetries: 5,
+        retryDelay: 500
+    };
+
+    // Função principal para carregar produtos
+    function carregarProdutos() {
+        try {
+            // 1. Obter dados do localStorage
+            const produtosJSON = localStorage.getItem(CONFIG.storageKey);
+            
+            if (!produtosJSON) {
+                console.warn('⚠️ Nenhum produto encontrado em localStorage');
+                return false;
+            }
+
+            const produtos = JSON.parse(produtosJSON);
+            
+            if (!Array.isArray(produtos) || produtos.length === 0) {
+                console.warn('⚠️ Array de produtos vazio ou inválido');
+                return false;
+            }
+
+            console.log('✅ Produtos carregados:', produtos);
+
+            // 2. Injetar CSS
+            injetarCSS();
+
+            // 3. Inserir produtos no DESKTOP (sidebar)
+            const containerDesktop = encontrarContainerDesktop();
+            if (containerDesktop) {
+                criarElementosProdutos(produtos, containerDesktop, 'desktop');
+                console.log('✅ Produtos inseridos no DESKTOP');
+            } else {
+                console.warn('⚠️ Container desktop não encontrado');
+            }
+
+            // 4. Inserir produtos no MOBILE
+            const containerMobile = encontrarContainerMobile();
+            if (containerMobile) {
+                criarElementosProdutos(produtos, containerMobile, 'mobile');
+                console.log('✅ Produtos inseridos no MOBILE');
+            } else {
+                console.warn('⚠️ Container mobile não encontrado');
+            }
+
+            // 5. Atualizar totais
+            atualizarTotais(produtos);
+
+            console.log('✅ Produtos exibidos com sucesso!');
+            return true;
+
+        } catch (error) {
+            console.error('❌ Erro ao carregar produtos:', error);
+            return false;
+        }
+    }
+
+    // Função para encontrar container no DESKTOP
+    function encontrarContainerDesktop() {
+        // Tentar encontrar container existente
+        let container = document.getElementById('productsListDesktop');
+        if (container) {
+            console.log('✅ Container desktop existente encontrado');
+            return container;
+        }
+
+        // Tentar encontrar a sidebar
+        const sidebar = document.querySelector('aside.sidebar');
+        if (sidebar) {
+            // Procurar pelo título do resumo
+            const titulo = sidebar.querySelector('.order-summary-title');
+            if (titulo) {
+                // Criar container após o título
+                container = document.createElement('div');
+                container.id = 'productsListDesktop';
+                container.className = 'products-list';
+                titulo.insertAdjacentElement('afterend', container);
+                
+                // Inserir divisor
+                const divisor = document.createElement('div');
+                divisor.style.cssText = 'border-top: 1px solid #e5e7eb; margin: 16px 0;';
+                container.insertAdjacentElement('afterend', divisor);
+                
+                console.log('✅ Container desktop criado após título da sidebar');
+                return container;
+            }
+        }
+
+        return null;
+    }
+
+    // Função para encontrar container no MOBILE - VERSÃO CORRIGIDA
+    function encontrarContainerMobile() {
+        // Tentar encontrar container existente
+        let container = document.getElementById('productsListMobile');
+        if (container) {
+            console.log('✅ Container mobile existente encontrado');
+            return container;
+        }
+
+        // Procurar pela estrutura mobile: .order-summary-mobile
+        const orderSummaryMobile = document.querySelector('.order-summary-mobile');
+        
+        if (!orderSummaryMobile) {
+            console.warn('⚠️ .order-summary-mobile não encontrado');
+            return null;
+        }
+
+        // Procurar pelo #summaryContent dentro do mobile
+        const summaryContent = orderSummaryMobile.querySelector('#summaryContent');
+        
+        if (!summaryContent) {
+            console.warn('⚠️ #summaryContent não encontrado');
+            return null;
+        }
+
+        // Procurar pelos order-totals dentro do summaryContent
+        const orderTotalsMobile = summaryContent.querySelector('.order-totals');
+        
+        if (!orderTotalsMobile) {
+            console.warn('⚠️ .order-totals dentro de #summaryContent não encontrado');
+            return null;
+        }
+
+        // Criar container ANTES dos totais
+        container = document.createElement('div');
+        container.id = 'productsListMobile';
+        container.className = 'products-list products-list-mobile';
+        
+        // Inserir ANTES dos totais
+        orderTotalsMobile.insertAdjacentElement('beforebegin', container);
+        
+        // Inserir divisor DEPOIS dos produtos
+        const divisor = document.createElement('div');
+        divisor.style.cssText = 'border-top: 1px solid #e5e7eb; margin: 16px 0;';
+        container.insertAdjacentElement('afterend', divisor);
+        
+        console.log('✅ Container mobile criado antes dos totais');
+        return container;
+    }
+
+    // Função para criar elementos dos produtos
+    function criarElementosProdutos(produtos, container, tipo = 'desktop') {
+        // Limpar container
+        container.innerHTML = '';
+
+        // Criar cada produto
+        produtos.forEach((produto, index) => {
+            try {
+                const produtoDiv = document.createElement('div');
+                produtoDiv.className = 'product-item';
+                produtoDiv.dataset.index = index;
+                produtoDiv.dataset.type = tipo;
+
+                // Extrair dados do produto (suporta múltiplos formatos)
+                const nome = produto.nome || produto.name || produto.title || 'Produto sem nome';
+                const quantidade = parseInt(produto.quantidade || produto.quantity || 1);
+                const preco = parseFloat(produto.preco || produto.price || produto.valor || 0);
+                const foto = produto.foto || produto.image || produto.img || produto.imagem || '';
+
+                // Formatar preço
+                const precoFormatado = preco.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+
+                // Calcular subtotal do produto
+                const subtotalProduto = preco * quantidade;
+                const subtotalFormatado = subtotalProduto.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+
+                // Montar HTML com imagem
+                const imagemHTML = foto ? `<img src="${sanitizeHTML(foto)}" alt="${sanitizeHTML(nome)}" class="product-image" onerror="this.style.display='none'">` : '';
+                
+                produtoDiv.innerHTML = `
+                    ${imagemHTML}
+                    <div class="product-info">
+                        <div class="product-name">${sanitizeHTML(nome)}</div>
+                        <div class="product-qty">Qtd: ${quantidade} × ${precoFormatado}</div>
+                    </div>
+                    <div class="product-price">${subtotalFormatado}</div>
+                `;
+
+                container.appendChild(produtoDiv);
+                console.log(`✅ Produto ${index + 1} adicionado (${tipo}): ${nome}`);
+
+            } catch (error) {
+                console.error(`❌ Erro ao processar produto ${index}:`, error);
+            }
+        });
+    }
+
+    // Função para injetar CSS
+    function injetarCSS() {
+        // Verificar se CSS já foi injetado
+        if (document.getElementById('products-list-styles')) {
+            return;
+        }
+
+        const style = document.createElement('style');
+        style.id = 'products-list-styles';
+        style.textContent = `
+            .products-list {
+                margin-bottom: 20px;
+                max-height: 400px;
+                overflow-y: auto;
+                padding: 0;
+            }
+
+            .products-list-mobile {
+                max-height: 300px;
+            }
+
+            .product-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 0;
+                border-bottom: 1px solid #f0f0f0;
+                font-size: 14px;
+                animation: slideIn 0.3s ease-out;
+            }
+
+            .product-image {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 6px;
+                flex-shrink: 0;
+                background: #f5f5f5;
+            }
+
+            .product-item:last-child {
+                border-bottom: none;
+            }
+
+            .product-info {
+                flex: 1;
+                padding-right: 10px;
+            }
+
+            .product-name {
+                font-weight: 500;
+                color: #333;
+                margin-bottom: 4px;
+                word-break: break-word;
+            }
+
+            .product-qty {
+                font-size: 12px;
+                color: #999;
+            }
+
+            .product-price {
+                font-weight: 600;
+                color: #333;
+                text-align: right;
+                min-width: 80px;
+                white-space: nowrap;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .products-list {
+                    max-height: 300px;
+                }
+
+                .product-item {
+                    padding: 10px 0;
+                    font-size: 13px;
+                    gap: 10px;
+                }
+
+                .product-image {
+                    width: 50px;
+                    height: 50px;
+                }
+
+                .product-price {
+                    min-width: 70px;
+                }
+            }
+        `;
+
+        document.head.appendChild(style);
+        console.log('✅ CSS injetado com sucesso');
+    }
+
+    // Função para atualizar totais
+    function atualizarTotais(produtos) {
+        try {
+            // Calcular subtotal total
+            const subtotal = produtos.reduce((total, produto) => {
+                const preco = parseFloat(produto.preco || produto.price || 0);
+                const quantidade = parseInt(produto.quantidade || produto.quantity || 1);
+                return total + (preco * quantidade);
+            }, 0);
+
+            const subtotalFormatado = subtotal.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+
+            // Atualizar subtotal no DESKTOP
+            const subtotalElementsDesktop = document.querySelectorAll('aside.sidebar .order-totals .total-row');
+            if (subtotalElementsDesktop.length > 0) {
+                const priceSpan = subtotalElementsDesktop[0].querySelector('span:last-child');
+                if (priceSpan && priceSpan.textContent === '...') {
+                    priceSpan.textContent = subtotalFormatado;
+                    console.log('✅ Subtotal desktop atualizado:', subtotalFormatado);
+                }
+            }
+
+            // Atualizar subtotal no MOBILE - VERSÃO CORRIGIDA
+            const summaryContent = document.querySelector('.order-summary-mobile #summaryContent');
+            if (summaryContent) {
+                const subtotalElementsMobile = summaryContent.querySelectorAll('.order-totals .total-row');
+                if (subtotalElementsMobile.length > 0) {
+                    const priceSpan = subtotalElementsMobile[0].querySelector('span:last-child');
+                    if (priceSpan && priceSpan.textContent === '...') {
+                        priceSpan.textContent = subtotalFormatado;
+                        console.log('✅ Subtotal mobile atualizado:', subtotalFormatado);
+                    }
+                }
+            }
+
+            // Atualizar total final
+            atualizarTotalFinal(subtotal);
+
+        } catch (error) {
+            console.error('❌ Erro ao atualizar totais:', error);
+        }
+    }
+
+    // Função para atualizar total final
+    function atualizarTotalFinal(subtotal) {
+        try {
+            let frete = 0;
+
+            // Obter valor do frete selecionado
+            const shippingOption = document.querySelector('.shipping-option.selected');
+            if (shippingOption) {
+                const priceText = shippingOption.querySelector('.shipping-price')?.textContent || 'GRÁTIS';
+                if (priceText !== 'GRÁTIS') {
+                    frete = parseFloat(priceText.replace(/[^\d,.-]/g, '').replace(',', '.'));
+                }
+            }
+
+            const total = subtotal + frete;
+            const totalFormatado = total.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+
+            // Atualizar total na sidebar (desktop)
+            const totalElementsDesktop = document.querySelectorAll('aside.sidebar .order-totals .total-row.final');
+            totalElementsDesktop.forEach(el => {
+                const priceSpan = el.querySelector('span:last-child');
+                if (priceSpan && priceSpan.textContent === '...') {
+                    priceSpan.textContent = totalFormatado;
+                }
+            });
+
+            // Atualizar total no mobile - VERSÃO CORRIGIDA
+            const summaryContent = document.querySelector('.order-summary-mobile #summaryContent');
+            if (summaryContent) {
+                const totalElementsMobile = summaryContent.querySelectorAll('.order-totals .total-row.final');
+                totalElementsMobile.forEach(el => {
+                    const priceSpan = el.querySelector('span:last-child');
+                    if (priceSpan && priceSpan.textContent === '...') {
+                        priceSpan.textContent = totalFormatado;
+                    }
+                });
+            }
+
+            // Atualizar total no toggle mobile
+            const mobileTotalPrice = document.getElementById('mobileTotalPrice');
+            if (mobileTotalPrice && mobileTotalPrice.textContent === '...') {
+                mobileTotalPrice.textContent = totalFormatado;
+            }
+
+            console.log('✅ Total atualizado:', totalFormatado);
+
+        } catch (error) {
+            console.error('❌ Erro ao atualizar total final:', error);
+        }
+    }
+
+    // Função para sanitizar HTML
+    function sanitizeHTML(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Função para tentar carregar com retry
+    function carregarComRetry(tentativa = 0) {
+        if (tentativa >= CONFIG.maxRetries) {
+            console.error('❌ Máximo de tentativas atingido');
+            return;
+        }
+
+        if (carregarProdutos()) {
+            return; // Sucesso
+        }
+
+        // Tentar novamente
+        console.log(`⏳ Tentativa ${tentativa + 1}/${CONFIG.maxRetries}...`);
+        setTimeout(() => {
+            carregarComRetry(tentativa + 1);
+        }, CONFIG.retryDelay);
+    }
+
+    // Inicializar quando o DOM estiver pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📦 Iniciando carregamento de produtos (Desktop + Mobile)...');
+            carregarComRetry();
+        });
+    } else {
+        console.log('📦 Iniciando carregamento de produtos (Desktop + Mobile)...');
+        carregarComRetry();
+    }
+
+    // Recarregar quando mudar opção de frete
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.shipping-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const produtosJSON = localStorage.getItem(CONFIG.storageKey);
+                if (produtosJSON) {
+                    const produtos = JSON.parse(produtosJSON);
+                    const subtotal = produtos.reduce((total, produto) => {
+                        const preco = parseFloat(produto.preco || produto.price || 0);
+                        const quantidade = parseInt(produto.quantidade || produto.quantity || 1);
+                        return total + (preco * quantidade);
+                    }, 0);
+                    atualizarTotalFinal(subtotal);
+                }
+            });
+        });
+    });
+
+})();
