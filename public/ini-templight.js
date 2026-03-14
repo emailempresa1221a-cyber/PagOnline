@@ -774,9 +774,6 @@ function updateReviewData() {
 }
 
 /**
- * Função para carregar os produtos do localStorage (carrinho_produtos) 
- * e exibir na seção de Revisão de Informações
- */
 function updateReviewProducts() {
     const reviewProductsList = document.getElementById('reviewProductsList');
     if (!reviewProductsList) return;
@@ -795,11 +792,36 @@ function updateReviewProducts() {
         }
 
         let html = '';
-        produtos.forEach(produto => {
+        produtos.forEach((produto, index) => {
             const nome = produto.nome || produto.name || 'Produto';
             const quantidade = produto.quantidade || produto.quantity || 1;
-            let preco = produto.preco || produto.price || 0;
             const foto = produto.foto || produto.image || '';
+
+            // Tentar extrair o preco de multiplos campos possiveis
+            let preco = produto.preco || produto.price || produto.valor || produto.subtotal || 0;
+            
+            // Se nao encontrou preco no objeto, tentar capturar do DOM (barra lateral)
+            if (!preco || preco === 0) {
+                const productsListDesktop = document.getElementById('productsListDesktop');
+                const productsListMobile = document.getElementById('productsListMobile');
+                const productsList = document.getElementById('productsList');
+                
+                let container = productsListDesktop || productsListMobile || productsList;
+                if (container) {
+                    const items = container.querySelectorAll('.product-item');
+                    if (items[index]) {
+                        const priceElement = items[index].querySelector('.product-price');
+                        if (priceElement) {
+                            const priceText = priceElement.textContent.trim();
+                            // Extrair numero da string (ex: "R$ 29,90" -> 29.90)
+                            const match = priceText.match(/[\d,]+\.?[\d]*/);
+                            if (match) {
+                                preco = parseFloat(match[0].replace(',', '.'));
+                            }
+                        }
+                    }
+                }
+            }
 
             // Converter para numero se for string
             if (typeof preco === 'string') {
@@ -839,7 +861,7 @@ function updateReviewProducts() {
         reviewProductsList.innerHTML = html;
 
     } catch (error) {
-        console.error('Erro ao carregar produtos na revisão:', error);
+        console.error('Erro ao carregar produtos na revisao:', error);
         reviewProductsList.innerHTML = '<p style="color: #ef4444; font-size: 12px;">Erro ao carregar produtos</p>';
     }
 }
