@@ -474,28 +474,31 @@
 .product-name::after {
     content: "Em Promoção";
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     
-    /* Azul Comercial Padrão Sólido */
-    background-color: #065f46; 
+    /* Verde Sóbrio e Profissional */
+    background-color: #064e3b; /* Um tom levemente mais profundo para mais autoridade */
     color: #ffffff;
     
-    /* Tipografia (30% Menor) */
-    font-size: 7px;           /* Reduzido de 10px para 7px */
-    font-weight: 700;
-    letter-spacing: 0.1em;
+    /* Tipografia Refinada */
+    font-size: 8px;            /* Ajustado de 7px para 8px para melhor legibilidade */
+    font-weight: 600;          /* Semitrito: mais elegante que o Negrito (700) */
+    letter-spacing: 0.12em;    /* Respiro horizontal para sofisticação */
     text-transform: uppercase;
+    line-height: 1;            /* Garante centralização vertical perfeita */
     
-    /* Design Pill Minimalista (30% Menor) */
-    padding: 2px 8px;         /* Reduzido de 3px/12px para 2px/8px */
-    border-radius: 50px;
-    margin-top: 6px;
+    /* Proporções Harmônicas */
+    padding: 4px 10px;         /* Proporção ideal de respiro (respiro lateral > vertical) */
+    border-radius: 99px;       /* Formato pílula perfeito */
+    margin-top: 8px;
     width: fit-content;
     
-    /* Estilo Limpo */
+    /* Acabamento Limpo */
     border: none;
     box-shadow: none;
+    vertical-align: middle;
 }
-
 
 
 </style>
