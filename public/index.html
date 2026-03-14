@@ -471,31 +471,47 @@
     opacity: 0.6;
 }
 
-  .product-name::after {
-  content: "Em Promoção"; /* Termo mais elegante que 'Promoção' */
+  /* 1. Ajuste no container (pai) do produto */
+.product-item { /* Substitua pela classe real do seu card de produto */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 2. O nome do produto continua no topo */
+.product-name {
+  order: 1; 
+  display: block;
+}
+
+/* 3. O elemento de quantidade/preço deve ter ordem intermediária */
+.product-quantity { /* Substitua pela classe da sua quantidade */
+  order: 2;
+}
+
+/* 4. A etiqueta de promoção agora vai para o final */
+.product-name::after {
+  content: "OFERTA ESPECIAL";
+  order: 3; /* Move para o fim da lista flex */
+  
   display: inline-flex;
   align-items: center;
   
-  /* Cores: Fundo suave com texto marcante */
-  background-color: #ecfdf5; /* Verde menta claríssimo (quase branco) */
-  color: #059669;            /* Verde esmeralda profundo e legível */
-  border: 1px solid #10b98133; /* Borda verde com 20% de opacidade */
+  /* Verde Profissional e Leve */
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1px solid #d1fae5;
   
-  /* Tipografia */
+  /* Design */
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  
-  /* Design e Espaçamento */
   padding: 3px 10px;
-  border-radius: 4px; /* Cantos levemente arredondados para um ar sério */
-  margin-top: 8px;
+  border-radius: 4px;
+  margin-top: 12px; /* Mais espaço para não sufocar a quantidade */
   width: fit-content;
-  
-  /* Refinamento */
-  box-shadow: 0 1px 2px rgba(5, 150, 105, 0.05);
 }
+
 
 
 </style>
