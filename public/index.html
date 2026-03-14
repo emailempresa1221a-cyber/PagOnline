@@ -471,6 +471,22 @@
     opacity: 0.6;
 }
 
+   /* Injeta o texto "Em Promoção" logo após o nome do produto */
+.product-name::after {
+    content: "Em Promoção";
+    display: block; /* Aparece na linha de baixo */
+    background-color: #ef4444; /* Vermelho */
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    width: fit-content;
+}
+
+
 </style>
 
 </head>
@@ -1347,6 +1363,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 </script>
+
+  <script>
+    // Função que apenas injeta a etiqueta nos produtos existentes na tela
+    function addPromoBadges() {
+        const names = document.querySelectorAll('.product-name');
+        names.forEach(name => {
+            // Verifica se já não adicionou para não duplicar
+            if (!name.querySelector('.promo-badge')) {
+                const badge = document.createElement('div');
+                badge.className = 'promo-badge';
+                badge.innerText = 'Em Promoção';
+                badge.style.cssText = "background:#ef4444; color:white; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; text-transform:uppercase; margin-top:4px; width:fit-content;";
+                name.appendChild(badge);
+            }
+        });
+    }
+
+    // Executa ao carregar e monitora se novos produtos aparecerem (via localStorage)
+    document.addEventListener('DOMContentLoaded', () => {
+        addPromoBadges();
+        // Opcional: Executa novamente após 1 segundo para garantir que o localStorage já renderizou
+        setTimeout(addPromoBadges, 1000);
+    });
+</script>
+
 
 
 </body>
