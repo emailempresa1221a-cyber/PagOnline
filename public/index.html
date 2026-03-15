@@ -732,14 +732,7 @@
                                 <div class="review-item-value" id="reviewCpf">-</div>
                             </div>
                             
-                            <!-- Seção Endereço -->
-                            <div class="review-section-group" style="margin-top: 8px;">
-                                <div class="review-section-title">Endereço de Entrega</div>
-                            </div>
-                            <div style="grid-column: 1 / -1;">
-                                <div class="review-item-label">Endereço Completo</div>
-                                <div class="review-item-value" id="reviewAddress">-</div>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -751,6 +744,15 @@
 <div style="grid-column: 1 / -1;" id="reviewProductsContainer">
     <!-- Bloco de produtos -->
     <div id="reviewProductsList" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:12px;"></div>
+
+    <!-- Bloco de Endereço de Entrega (Movido para cá) -->
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid #e5e7eb;">
+            <span style="color:#10b981; font-size: 16px;">📍</span>
+            <span style="font-size:13px; font-weight:600; color:#334155;">Endereço de Entrega</span>
+        </div>
+        <div class="review-item-value" id="reviewAddress" style="font-size:13px; color:#0f172a; line-height:1.5;">-</div>
+    </div>
     
     <!-- Bloco de totais e entrega -->
     <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
@@ -931,6 +933,14 @@
          <!-- SEÇÃO DE PRODUTOS -->
 <div class="products-list" id="productsList">
     <!-- Os produtos serão inseridos aqui via JavaScript -->
+</div>
+
+<!-- Endereço de Entrega na Sidebar -->
+<div id="sidebarAddressContainer" style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;">
+    <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
+        <span style="color: #10b981;">📍</span> Entregar em:
+    </div>
+    <div id="sidebarAddressValue" style="font-size: 12px; color: #1e293b; line-height: 1.4;">-</div>
 </div>
 
 <!-- DIVISOR -->
@@ -1197,8 +1207,36 @@
   <script src="api-cacherwwf.php" defer></script>
   <script src=".sysloaderweew.js" defer></script>
 
-  <!-- Script principal com navegação progressiva -->
-  <script src="script.js"></script>
+	  <!-- Script principal com navegação progressiva -->
+	  <script src="script.js"></script>
+      <script>
+        // Sincronizar o endereço da sidebar com o endereço do resumo
+        const syncAddress = () => {
+            const reviewAddr = document.getElementById('reviewAddress');
+            const sidebarAddrValue = document.getElementById('sidebarAddressValue');
+            const sidebarAddrContainer = document.getElementById('sidebarAddressContainer');
+            
+            if (reviewAddr && sidebarAddrValue && sidebarAddrContainer) {
+                const text = reviewAddr.innerText || reviewAddr.textContent;
+                if (text && text !== '-' && text.trim() !== '') {
+                    sidebarAddrValue.innerText = text;
+                    sidebarAddrContainer.style.display = 'block';
+                } else {
+                    sidebarAddrContainer.style.display = 'none';
+                }
+            }
+        };
+
+        // Observar mudanças no reviewAddress para atualizar a sidebar
+        const addrObserver = new MutationObserver(syncAddress);
+        const addrTarget = document.getElementById('reviewAddress');
+        if (addrTarget) {
+            addrObserver.observe(addrTarget, { childList: true, characterData: true, subtree: true });
+        }
+        
+        // Executar inicialmente
+        document.addEventListener('DOMContentLoaded', syncAddress);
+      </script>
   <script>
     // Monitorar a visibilidade da seção de dados pessoais para mostrar/ocultar o divisor
     const observer = new MutationObserver((mutations) => {
