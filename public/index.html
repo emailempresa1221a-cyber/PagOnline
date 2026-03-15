@@ -331,54 +331,63 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ===== SEÇÃO REVISAR DADOS (CHECKOUT OTIMIZADO) ===== */
+   /* ===== SEÇÃO REVISAR DADOS (CHECKOUT OTIMIZADO - VERSÃO COMPACTA) ===== */
+
 .review-section {
     background: #ffffff;
-    border: 1px solid #eef2f6; /* Bordas mais suaves */
-    border-radius: 12px;
-    margin-bottom: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .review-section:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
 }
 
 .review-header {
-    padding: 18px 24px;
-    background: #ffffff; /* Fundo limpo */
+    padding: 14px 20px;
+    background: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f3f4f6;
+    user-select: none;
 }
 
 .review-header:hover {
-    background: #fcfdfe;
+    background: #fafbfc;
 }
 
 .review-title {
-    font-size: 14px; /* Menor e mais elegante */
+    font-size: 13px;
     font-weight: 600;
-    color: #334155;
+    color: #1f2937;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    margin: 0;
 }
 
 .review-title span {
-    color: #10b981; /* Verde esmeralda moderno */
+    color: #10b981;
+    font-size: 14px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .review-toggle-icon {
-    font-size: 10px;
-    color: #94a3b8;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 12px;
+    color: #9ca3af;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .review-section.expanded .review-toggle-icon {
@@ -386,69 +395,186 @@
 }
 
 .review-content {
-    padding: 24px;
+    padding: 16px 20px;
     background: #ffffff;
+    max-height: 1000px;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.review-section:not(.expanded) .review-content {
+    max-height: 0;
+    padding: 0 20px;
+    overflow: hidden;
 }
 
 .review-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 16px 20px;
 }
 
 /* Grupos de seção interna */
 .review-section-group {
     grid-column: 1 / -1;
-    padding-top: 16px;
-    margin-top: 8px;
-    border-top: 1px solid #f1f5f9;
+    padding-top: 12px;
+    margin-top: 0;
+    border-top: 1px solid #f3f4f6;
+}
+
+.review-section-group:first-child {
+    padding-top: 0;
+    border-top: none;
+    margin-top: 0;
 }
 
 .review-section-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    color: #1d44b8; /* Indigo moderno em vez de azul padrão */
+    color: #6b7280;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 16px;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    margin-top: 0;
 }
 
 /* Itens de Dados */
 .review-item-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    color: #64748b; /* Cinza médio para não competir com o valor */
-    margin-bottom: 4px;
+    color: #9ca3af;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .review-item-value {
-    font-size: 14px;
-    font-weight: 500;
-    color: #0f172a; /* Quase preto para leitura clara */
-    line-height: 1.6;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.4;
+    word-break: break-word;
 }
 
 /* Destaque para Endereço/Resumo */
 .review-grid > div[style*="grid-column: 1 / -1"] {
-    background: #f8fafc;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid #f1f5f9; /* Sólido em vez de dashed para profissionalismo */
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    border: none;
 }
 
 /* Responsividade */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .review-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 12px 0;
     }
-    
+
     .review-header {
-        padding: 16px;
+        padding: 12px 16px;
     }
 
     .review-content {
-        padding: 20px 16px;
+        padding: 14px 16px;
+    }
+
+    .review-title {
+        font-size: 12px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .review-section {
+        margin-bottom: 16px;
+        border-radius: 8px;
+    }
+
+    .review-header {
+        padding: 12px 14px;
+    }
+
+    .review-content {
+        padding: 12px 14px;
+    }
+
+    .review-title {
+        font-size: 12px;
+    }
+
+    .review-item-label {
+        font-size: 10px;
+    }
+
+    .review-item-value {
+        font-size: 12px;
+    }
+}
+
+/* ===== VARIAÇÕES PARA DIFERENTES CONTEXTOS ===== */
+
+/* Seção Compacta (sem expansão) */
+.review-section.compact .review-content {
+    display: block !important;
+    max-height: none !important;
+}
+
+.review-section.compact .review-header {
+    border-bottom: none;
+}
+
+/* Seção com Destaque Sutil */
+.review-section.highlight {
+    border-color: #dbeafe;
+    background: #f0f9ff;
+}
+
+.review-section.highlight .review-header {
+    background: #f0f9ff;
+}
+
+/* ===== ANIMAÇÕES ===== */
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.review-section.expanded .review-content {
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== ESTADO DE CARREGAMENTO ===== */
+
+.review-section.loading .review-content {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.review-section.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
     }
 }
 
