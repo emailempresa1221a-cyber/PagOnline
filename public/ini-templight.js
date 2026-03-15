@@ -759,18 +759,20 @@ function updateReviewData() {
     fullAddress += ` | ${neighborhood}, ${city} - ${state} | CEP: ${zipCode}`;
     document.getElementById('reviewAddress').textContent = fullAddress;
 
-        // Dados do frete
+            // Dados do frete
     const shippingOption = document.querySelector('.shipping-option.selected');
     if (shippingOption) {
         const title = shippingOption.querySelector('h4').textContent;
         const time = shippingOption.querySelector('p').textContent;
+        const priceText = shippingOption.querySelector('.shipping-price')?.textContent || 'GRÁTIS';
+        
         document.getElementById('reviewShippingMethod').textContent = title;
         document.getElementById('reviewShippingTime').textContent = time;
     }
 
-    // Adicione esta linha aqui para carregar os produtos na revisão
     renderReviewProducts();
 }
+
 
 function goToStep(step) {
     if (step === 2) {
