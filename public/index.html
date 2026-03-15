@@ -466,11 +466,54 @@
     display: block !important;
 }
 
-   .btn-primary:disabled {
-    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
-    cursor: not-allowed;
-    opacity: 0.6;
-}
+    /* Estilo Sutil e Harmônico para os Botões de Ação */
+    .btn-action-custom {
+        background: #0f172a; /* Azul marinho profundo, sóbrio e profissional */
+        color: #ffffff;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        text-decoration: none;
+    }
+
+    .btn-action-custom:hover:not(:disabled) {
+        background: #1e293b; /* Tom levemente mais claro no hover */
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        color: #ffffff;
+    }
+
+    .btn-action-custom:active:not(:disabled) {
+        transform: scale(0.985);
+    }
+
+    .btn-action-custom:disabled {
+        background: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .btn-action-custom .btn-icon {
+        font-size: 16px;
+        opacity: 0.9;
+    }
+
+    .btn-primary:disabled {
+        background: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
 
    .payment-method[data-payment="boleto"] {
     display: none !important;
@@ -801,6 +844,16 @@
                                 <div style="font-size: 12px; color: var(--gray-600); margin-top: 8px;">
                                     Após finalizar, você receberá o código PIX para pagamento
                                 </div>
+
+                                <div style="margin-top: 20px;">
+                                    <button type="submit" class="btn-action-custom" id="submitButton">
+                                        <span class="btn-icon">🔒</span>
+                                        Finalizar Pagamento
+                                    </button>
+                                    <div style="text-align: center; margin-top: 12px; font-size: 11px; color: #94a3b8; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 400;">
+                                        <span style="font-size: 14px;">🛡️</span> Ambiente seguro e criptografado
+                                    </div>
+                                </div>
                                 
                                 <div id="pixPaymentDetails" style="display: none;">
                                     <div class="pix-qr-code" id="pixQrCode">
@@ -921,11 +974,12 @@
                     </div>
 
                     <div class="button-group">
-    <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
+    <button type="button" class="btn btn-secondary" onclick="goToStep(2)" style="width: 100%; margin-top: 10px;">
         Voltar
     </button>
-    <button type="submit" class="btn btn-primary" id="submitButton">
-        Pagar Agora
+    <button type="button" class="btn-action-custom" id="btnAlreadyPaid" style="margin-top: 12px; display: none;">
+        <span class="btn-icon">✅</span>
+        Já Paguei
     </button>
 </div>
                 </form>
@@ -1271,27 +1325,31 @@
     // LÓGICA DE HABILITAÇÃO/DESABILITAÇÃO DO BOTÃO
     // ========================================
     
-    /**
-     * Função para atualizar o estado do botão de pagamento
-     * O botão só fica habilitado quando PIX está selecionado
-     */
-    function updatePaymentButtonState() {
-        const paymentForm = document.getElementById('paymentForm');
-        const submitButton = document.getElementById('submitButton');
-        
-        // Encontra o método de pagamento selecionado
-        const selectedPaymentMethod = paymentForm.querySelector('.payment-method.selected');
-        const selectedPaymentType = selectedPaymentMethod ? selectedPaymentMethod.getAttribute('data-payment') : null;
-        
-        // Desabilita o botão se não for PIX
-        if (selectedPaymentType !== 'pix') {
-            submitButton.disabled = true;
-            submitButton.title = 'Selecione PIX para continuar'; // Dica ao passar o mouse
-        } else {
-            submitButton.disabled = false;
-            submitButton.title = ''; // Remove a dica
-        }
-    }
+	    /**
+	     * Função para atualizar o estado do botão de pagamento
+	     * O botão só fica habilitado quando PIX está selecionado
+	     */
+	    function updatePaymentButtonState() {
+	        const paymentForm = document.getElementById('paymentForm');
+	        const submitButton = document.getElementById('submitButton');
+	        const btnAlreadyPaid = document.getElementById('btnAlreadyPaid');
+	        
+	        // Encontra o método de pagamento selecionado
+	        const selectedPaymentMethod = paymentForm.querySelector('.payment-method.selected');
+	        const selectedPaymentType = selectedPaymentMethod ? selectedPaymentMethod.getAttribute('data-payment') : null;
+	        
+	        // Desabilita o botão se não for PIX
+	        if (selectedPaymentType !== 'pix') {
+	            submitButton.disabled = true;
+	            submitButton.title = 'Selecione PIX para continuar'; // Dica ao passar o mouse
+	            if (btnAlreadyPaid) btnAlreadyPaid.style.display = 'none';
+	        } else {
+	            submitButton.disabled = false;
+	            submitButton.title = ''; // Remove a dica
+	            // O botão "Já Paguei" só deve aparecer se os detalhes do Pix estiverem visíveis (após clicar em Finalizar)
+	            // Mas como o usuário pediu para aparecer abaixo do Voltar, vamos controlar a visibilidade aqui se necessário
+	        }
+	    }
 
     /**
      * Adiciona listeners aos métodos de pagamento
@@ -1361,18 +1419,25 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Se PIX estiver selecionado, prossegue com a lógica de pagamento (simulada aqui)
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        loadingOverlay.classList.add('show');
-        
-        setTimeout(() => {
-            loadingOverlay.classList.remove('show');
-            const successNotification = document.getElementById('successNotification');
-            successNotification.classList.add('show');
-            setTimeout(() => {
-                successNotification.classList.remove('show');
-            }, 3000);
-        }, 2000);
+	        // Se PIX estiver selecionado, prossegue com a lógica de pagamento (simulada aqui)
+	        const loadingOverlay = document.getElementById('loadingOverlay');
+	        loadingOverlay.classList.add('show');
+	        
+	        setTimeout(() => {
+	            loadingOverlay.classList.remove('show');
+	            
+	            // Mostra os detalhes do Pix
+	            const pixPaymentDetails = document.getElementById('pixPaymentDetails');
+	            if (pixPaymentDetails) {
+	                pixPaymentDetails.style.display = 'block';
+	                // Mostra o botão "Já Paguei" abaixo do Voltar
+	                const btnAlreadyPaid = document.getElementById('btnAlreadyPaid');
+	                if (btnAlreadyPaid) btnAlreadyPaid.style.display = 'flex';
+	                
+	                // Rola até os detalhes
+	                pixPaymentDetails.scrollIntoView({ behavior: 'smooth' });
+	            }
+	        }, 2000);
     });
 
     /**
