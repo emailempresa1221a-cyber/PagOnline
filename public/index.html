@@ -754,13 +754,44 @@
 
               <!-- Seção Produtos do Pedido -->
 <div class="review-section-group" style="margin-top: 8px;" id="reviewProductsGroup">
-    <div class="review-section-title">Produtos do Pedido</div>
+    <div class="review-section-title">Resumo do Pedido</div>
 </div>
 <div style="grid-column: 1 / -1;" id="reviewProductsContainer">
-    <div id="reviewProductsList" style="display:flex;flex-direction:column;">
-        <!-- Produtos preenchidos via JS -->
+    <!-- Bloco de produtos -->
+    <div id="reviewProductsList" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:12px;"></div>
+    
+    <!-- Bloco de totais -->
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;">
+            <span style="font-size:13px;color:#64748b;">Subtotal</span>
+            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewSubtotal">-</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:13px;color:#64748b;">Frete</span>
+            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingPrice">-</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-top:12px;border-top:2px solid #e5e7eb;">
+            <span style="font-size:14px;font-weight:700;color:#0f172a;">Total</span>
+            <span style="font-size:16px;font-weight:700;color:#10b981;" id="reviewTotalPrice">-</span>
+        </div>
     </div>
 </div>
+
+<!-- Seção Tipo de Entrega (modificada para incluir valor) -->
+<div class="review-section-group" style="margin-top: 8px;">
+    <div class="review-section-title">Opção de Entrega</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div>
+        <div class="review-item-label">Tipo de Entrega</div>
+        <div class="review-item-value" id="reviewShippingMethod">-</div>
+    </div>
+    <div>
+        <div class="review-item-label">Prazo Estimado</div>
+        <div class="review-item-value" id="reviewShippingTime">-</div>
+    </div>
+</div>
+
 
 
                 <!-- Aviso sobre correção do CORS -->
