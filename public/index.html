@@ -758,10 +758,6 @@
             <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingPrice">-</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">
-            <span style="font-size:13px;color:#64748b;">Tipo de Entrega</span>
-            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingMethod">-</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">
             <span style="font-size:13px;color:#64748b;">Prazo Estimado</span>
             <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingTime">-</span>
         </div>
@@ -774,77 +770,7 @@
 
 <div style="margin-bottom: 32px;"></div>
               
-                <form id="paymentForm">
-                    <div class="payment-method" data-payment="credit">
-                        <div class="payment-header">
-                            <div class="payment-radio"></div>
-                            <div class="payment-info">
-                                <h4>Cartão de Crédito</h4>
-                                <p>Visa, Mastercard, Elo, American Express</p>
-                            </div>
-                        </div>
-                        <div class="payment-form">
-                            <div class="card-brands">
-                                <div class="card-brand">VISA</div>
-                                <div class="card-brand">MASTER</div>
-                                <div class="card-brand">ELO</div>
-                                <div class="card-brand">AMEX</div>
-                            </div>
-                            
-                            <div id="creditCardNotice" style="background: #fef3cd; border: 1px solid #fbbf24; border-radius: 8px; padding: 12px; margin-bottom: 16px; display: block;">
-                                <div style="font-size: 12px; color: #92400e; text-align: center;">
-                                    <strong>Descontos não aplicados para pagamentos com cartão</strong><br>
-                                    Valor com Cartão: <span id="creditCardTotalValue" style="font-weight: 700;">R$ 314,90</span>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="cardNumber">Número do Cartão *</label>
-                                <input type="text" id="cardNumber" name="cardNumber" class="form-input" maxlength="19" required>
-                                <div class="error-message" id="cardNumberError">Digite o número do cartão</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="cardName">Nome no Cartão *</label>
-                                <input type="text" id="cardName" name="cardName" class="form-input" required>
-                                <div class="error-message" id="cardNameError">Digite o nome no cartão</div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label" for="cardExpiry">Validade *</label>
-                                    <input type="text" id="cardExpiry" name="cardExpiry" class="form-input" placeholder="MM/AA" maxlength="5" required>
-                                    <div class="error-message" id="cardExpiryError">Digite a validade</div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="cardCvv">CVV *</label>
-                                    <input type="text" id="cardCvv" name="cardCvv" class="form-input" maxlength="4" required>
-                                    <div class="error-message" id="cardCvvError">Digite o CVV</div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="installments">Parcelas *</label>
-                                <select id="installments" name="installments" class="form-input" required>
-                                    <option value="">Selecione as parcelas</option>
-                                    <option value="1">1x R$ 299,90 à vista</option>
-                                    <option value="2">2x R$ 149,95 sem juros</option>
-                                    <option value="3">3x R$ 99,97 sem juros</option>
-                                    <option value="4">4x R$ 74,98 sem juros</option>
-                                    <option value="5">5x R$ 59,98 sem juros</option>
-                                    <option value="6">6x R$ 49,98 sem juros</option>
-                                    <option value="7">7x R$ 45,70 com juros</option>
-                                    <option value="8">8x R$ 40,89 com juros</option>
-                                    <option value="9">9x R$ 37,21 com juros</option>
-                                    <option value="10">10x R$ 34,29 com juros</option>
-                                    <option value="11">11x R$ 31,90 com juros</option>
-                                    <option value="12">12x R$ 29,99 com juros</option>
-                                </select>
-                                <div class="error-message" id="installmentsError">Selecione as parcelas</div>
-                            </div>
-                        </div>
-                    </div>
-
+                <form id="paymentForm">                    
                     <div class="payment-method selected" data-payment="pix">
                         <div class="payment-header">
                             <div class="payment-radio"></div>
@@ -894,8 +820,8 @@
                         <div class="payment-header">
                             <div class="payment-radio"></div>
                             <div class="payment-info">
-                                <h4>Boleto Bancário</h4>
-                                <p>Vencimento em 3 dias úteis</p>
+                                <h4>Cartão de Crédito</h4>
+                                <p>Visa, Mastercard, Elo, American Express </p>
                             </div>
                         </div>
                         <div class="payment-form">
