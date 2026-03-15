@@ -801,12 +801,6 @@
                                 <div style="font-size: 12px; color: var(--gray-600); margin-top: 8px;">
                                     Após finalizar, você receberá o código PIX para pagamento
                                 </div>
-
-                                <div style="margin-top: 20px;">
-                                    <button type="submit" class="btn btn-primary" id="submitButton" style="width: 100%; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 8px;">
-                                        Pagar Agora
-                                    </button>
-                                </div>
                                 
                                 <div id="pixPaymentDetails" style="display: none;">
                                     <div class="pix-qr-code" id="pixQrCode">
@@ -927,8 +921,11 @@
                     </div>
 
                     <div class="button-group">
-    <button type="button" class="btn btn-secondary" onclick="goToStep(2)" style="width: 100%; margin-top: 10px;">
+    <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
         Voltar
+    </button>
+    <button type="submit" class="btn btn-primary" id="submitButton">
+        Pagar Agora
     </button>
 </div>
                 </form>
