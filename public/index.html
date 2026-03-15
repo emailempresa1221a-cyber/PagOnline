@@ -752,7 +752,7 @@
                     </div>
                 </div>
 
-              <!-- Seção Produtos do Pedido -->
+             <!-- Seção Produtos do Pedido -->
 <div class="review-section-group" style="margin-top: 8px;" id="reviewProductsGroup">
     <div class="review-section-title">Resumo do Pedido</div>
 </div>
@@ -760,22 +760,31 @@
     <!-- Bloco de produtos -->
     <div id="reviewProductsList" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:12px;"></div>
     
-    <!-- Bloco de totais -->
+    <!-- Bloco de totais e entrega -->
     <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;">
             <span style="font-size:13px;color:#64748b;">Subtotal</span>
             <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewSubtotal">-</span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;">
             <span style="font-size:13px;color:#64748b;">Frete</span>
             <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingPrice">-</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding-top:12px;border-top:2px solid #e5e7eb;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">
+            <span style="font-size:13px;color:#64748b;">Tipo de Entrega</span>
+            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingMethod">-</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">
+            <span style="font-size:13px;color:#64748b;">Prazo Estimado</span>
+            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingTime">-</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-top:8px;">
             <span style="font-size:14px;font-weight:700;color:#0f172a;">Total</span>
             <span style="font-size:16px;font-weight:700;color:#10b981;" id="reviewTotalPrice">-</span>
         </div>
     </div>
 </div>
+
 
 <!-- Seção Tipo de Entrega (modificada para incluir valor) -->
 <div class="review-section-group" style="margin-top: 8px;">
@@ -1486,13 +1495,11 @@ function renderReviewProducts() {
 
     // Calcula frete e total
     var freteValor = 0;
-    var freteTexto = 'GRÁTIS';
     var shippingOption = document.querySelector('.shipping-option.selected');
     if (shippingOption) {
         var priceText = shippingOption.querySelector('.shipping-price')?.textContent || 'GRÁTIS';
         if (priceText !== 'GRÁTIS') {
             freteValor = parseFloat(priceText.replace(/[^\d,.-]/g, '').replace(',', '.'));
-            freteTexto = priceText;
         }
     }
 
@@ -1506,6 +1513,7 @@ function renderReviewProducts() {
     var totalEl = document.getElementById('reviewTotalPrice');
     if (totalEl) totalEl.textContent = totalFormatado;
 }
+
 
 </script>
 
