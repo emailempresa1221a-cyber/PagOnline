@@ -110,8 +110,8 @@
         height: 70px;
         min-width: 70px;
         margin-left: 8px;
-        background: transparent;
-        border: none;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
         border-radius: 6px;
         display: flex;
         align-items: center;
@@ -231,7 +231,7 @@
 
     /* Bloco de endereço automático (não editável) */
     .address-info-block {
-        background: transparent;
+        background: #f9fafb;
         border: 1px solid #e5e7eb;
         border-radius: 8px;
         padding: 16px;
@@ -743,10 +743,10 @@
 </div>
 <div style="grid-column: 1 / -1;" id="reviewProductsContainer">
     <!-- Bloco de produtos -->
-    <div id="reviewProductsList" style="margin-bottom:12px;"></div>
+    <div id="reviewProductsList" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:12px;"></div>
     
     <!-- Bloco de totais e entrega -->
-    <div style="padding:16px 0;">
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;">
             <span style="font-size:13px;color:#64748b;">Subtotal</span>
             <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewSubtotal">-</span>
@@ -941,7 +941,7 @@
 </div>
 
 <!-- Endereço de Entrega na Sidebar -->
-<div id="sidebarAddressContainer" style="margin-bottom: 16px; padding: 12px 0; display: none;">
+<div id="sidebarAddressContainer" style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;">
     <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
         <span style="color: #10b981;">📍</span> Entregar em:
     </div>
@@ -1480,8 +1480,8 @@ function renderReviewProducts() {
         item.style.cssText = 'display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #e5e7eb;';
         
         var imgHTML = foto 
-            ? '<img src="'+foto+'" style="width:60px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0;" onerror="this.style.display=\'none\'">'
-            : '<div style="width:60px;height:60px;border-radius:6px;background:transparent;flex-shrink:0;"></div>';
+            ? '<img src="'+foto+'" style="width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #d1d5db;flex-shrink:0;" onerror="this.style.display=\'none\'">'
+            : '<div style="width:60px;height:60px;border-radius:6px;border:1px solid #d1d5db;background:#ffffff;flex-shrink:0;"></div>';
 
         item.innerHTML = imgHTML + 
             '<div style="flex:1;min-width:0;">' +
