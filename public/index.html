@@ -466,69 +466,45 @@
     display: block !important;
 }
 
-    /* Estilo Profissional para o Botão de Pagamento */
+    /* Estilo Sutil e Harmônico para o Botão de Pagamento */
     .btn-pay-now {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
+        background: #0f172a; /* Azul marinho profundo, sóbrio e profissional */
+        color: #ffffff;
         border: none;
-        padding: 16px 32px;
-        border-radius: 12px;
-        font-size: 18px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.2s ease;
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2), 0 2px 4px -1px rgba(16, 185, 129, 0.1);
-        position: relative;
-        overflow: hidden;
+        gap: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .btn-pay-now:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -2px rgba(16, 185, 129, 0.1);
-        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        background: #1e293b; /* Tom levemente mais claro no hover */
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
     }
 
     .btn-pay-now:active:not(:disabled) {
-        transform: translateY(0);
+        transform: scale(0.985);
     }
 
     .btn-pay-now:disabled {
-        background: #e5e7eb;
-        color: #9ca3af;
+        background: #f1f5f9;
+        color: #94a3b8;
         cursor: not-allowed;
         box-shadow: none;
-        transform: none;
     }
 
     .btn-pay-now .btn-icon {
-        font-size: 20px;
-    }
-
-    /* Efeito de brilho ao passar o mouse */
-    .btn-pay-now::after {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: rgba(255, 255, 255, 0.1);
-        transform: rotate(45deg);
-        transition: all 0.5s;
-        opacity: 0;
-    }
-
-    .btn-pay-now:hover::after {
-        opacity: 1;
-        left: 100%;
-        top: 100%;
+        font-size: 16px;
+        opacity: 0.9;
     }
 
     .btn-primary:disabled {
@@ -804,7 +780,7 @@
 
              <!-- Seção Produtos do Pedido -->
 <div class="review-section-group" style="margin-top: 8px;" id="reviewProductsGroup">
-    <div class="review-section-title">🛒 Resumo do Pedido</div>
+    <div class="review-section-title">Resumo do Pedido</div>
 </div>
 <div style="grid-column: 1 / -1;" id="reviewProductsContainer">
     <!-- Bloco de produtos -->
@@ -867,13 +843,13 @@
                                     Após finalizar, você receberá o código PIX para pagamento
                                 </div>
 
-                                <div style="margin-top: 24px;">
+                                <div style="margin-top: 20px;">
                                     <button type="submit" class="btn-pay-now" id="submitButton">
                                         <span class="btn-icon">🔒</span>
-                                        Pagar Agora
+                                        Finalizar Pagamento
                                     </button>
-                                    <div style="text-align: center; margin-top: 12px; font-size: 12px; color: #64748b; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                        <span>🛡️</span> Pagamento Processado com Segurança
+                                    <div style="text-align: center; margin-top: 12px; font-size: 11px; color: #94a3b8; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 400;">
+                                        <span style="font-size: 14px;">🛡️</span> Ambiente seguro e criptografado
                                     </div>
                                 </div>
                                 
@@ -1005,7 +981,7 @@
         </main>
 
         <aside class="sidebar">
-            <h3 class="order-summary-title">🛒 Resumo do Pedido</h3>
+            <h3 class="order-summary-title">Resumo do Pedido</h3>
 
          <!-- SEÇÃO DE PRODUTOS -->
 <div class="products-list" id="productsList">
