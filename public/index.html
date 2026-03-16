@@ -1533,6 +1533,56 @@ function renderReviewProducts() {
 
 </script>
 
+	<script>
+    // Função para fechar o teclado no campo de e-mail quando ".com" é digitado
+    document.addEventListener("DOMContentLoaded", function() {
+        const emailInput = document.getElementById("email");
+        
+        if (emailInput) {
+            emailInput.addEventListener("input", function(e) {
+                const value = this.value.toLowerCase();
+                
+                // Fecha o teclado se o e-mail contém ".com"
+                if (value.includes(".com")) {
+                    this.blur(); // Remove o foco e esconde o teclado
+                }
+            });
+        }
+    });
+
+    // Função para formatar telefone e fechar o teclado automaticamente
+    document.addEventListener("DOMContentLoaded", function() {
+        const phoneInput = document.getElementById("phone");
+        
+        if (phoneInput) {
+            phoneInput.addEventListener("input", function(e) {
+                let value = this.value;
+                
+                // Remove tudo que não é número
+                value = value.replace(/\D/g, "");
+                
+                // Limita a 11 dígitos (2 de DDD + 9 do número)
+                value = value.substring(0, 11);
+                
+                // Aplica a máscara: (XX) XXXXX-XXXX
+                if (value.length > 7) {
+                    value = value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+                } else if (value.length > 2) {
+                    value = value.replace(/(\d{2})(\d+)/, "($1) $2");
+                }
+                
+                this.value = value;
+                
+                // FECHA O TECLADO: Se o telefone estiver completo (15 caracteres com a máscara)
+                if (this.value.length === 15) {
+                    this.blur(); // Remove o foco e esconde o teclado
+                }
+            });
+        }
+    });
+</script>
+
+
 
 </body>
 
