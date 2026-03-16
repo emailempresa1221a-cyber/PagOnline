@@ -378,183 +378,142 @@
 .review-toggle-icon {
     font-size: 10px;
     color: #94a3b8;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s ease;
 }
 
-.review-section.expanded .review-toggle-icon {
+.review-section.open .review-toggle-icon {
     transform: rotate(180deg);
 }
 
 .review-content {
+    display: none;
     padding: 24px;
     background: #ffffff;
-}
-
-.review-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-}
-
-/* Grupos de seção interna */
-.review-section-group {
-    grid-column: 1 / -1;
-    padding-top: 16px;
-    margin-top: 8px;
     border-top: 1px solid #f1f5f9;
 }
 
-.review-section-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #1d44b8; /* Indigo moderno em vez de azul padrão */
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 16px;
+.review-section.open .review-content {
+    display: block;
+    animation: slideDown 0.3s ease-out;
 }
 
-/* Itens de Dados */
-.review-item-label {
+.review-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.review-row:last-child {
+    margin-bottom: 0;
+}
+
+.review-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.review-label {
     font-size: 12px;
     font-weight: 500;
-    color: #64748b; /* Cinza médio para não competir com o valor */
-    margin-bottom: 4px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.review-item-value {
+.review-value {
     font-size: 14px;
-    font-weight: 500;
-    color: #0f172a; /* Quase preto para leitura clara */
-    line-height: 1.6;
+    font-weight: 600;
+    color: #0f172a;
 }
 
-/* Destaque para Endereço/Resumo */
-.review-grid > div[style*="grid-column: 1 / -1"] {
+/* Resumo de produtos */
+.review-products-summary {
     background: #f8fafc;
-    padding: 16px;
     border-radius: 8px;
-    border: 1px solid #f1f5f9; /* Sólido em vez de dashed para profissionalismo */
+    padding: 16px;
+    margin-bottom: 24px;
 }
 
-/* Responsividade */
-@media (max-width: 640px) {
-    .review-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .review-header {
-        padding: 16px;
-    }
-
-    .review-content {
-        padding: 20px 16px;
-    }
+.review-products-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-
-
-   /* Ocultar campos do cartão mantendo apenas a mensagem */
-.payment-method[data-payment="credit"] .card-brands,
-.payment-method[data-payment="credit"] .form-group,
-.payment-method[data-payment="credit"] .form-row {
-    display: none !important;
+.review-product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
 }
 
-/* Garantir que a mensagem de aviso seja visível */
-.payment-method[data-payment="credit"] #creditCardNotice {
-    display: block !important;
+.review-product-item:last-child {
+    border-bottom: none;
 }
 
-   .btn-primary:disabled {
-    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
-    cursor: not-allowed;
-    opacity: 0.6;
+.review-product-name {
+    color: #334155;
+    font-weight: 500;
 }
 
-   .payment-method[data-payment="boleto"] {
-    display: none !important;
+.review-product-price {
+    color: #0f172a;
+    font-weight: 600;
 }
 
+/* Resumo de preços */
+.review-pricing {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
-</style>
+.review-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
 
-</head>
-<body>
-    <div class="checkout-container">
-        <header class="checkout-header">
-            <div class="header-content">
-                <div class="logo">🛒 PagOnline</div>
-                <div class="security-badge">
-                    <span>🔒</span>
-                    Compra 100% Segura
-                </div>
-            </div>
-        </header>
+.review-price-row.total {
+    border-top: 2px solid #e2e8f0;
+    padding-top: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+}
 
-        <div class="order-summary-mobile">
-            <div class="summary-toggle expanded" onclick="toggleOrderSummary()">
-                <div class="summary-toggle-left">
-                    <span class="summary-toggle-icon">▲</span>
-                    <span class="summary-toggle-text">Ocultar resumo do pedido</span>
-                </div>
-                <span class="summary-toggle-price" id="mobileTotalPrice">...</span>
-            </div>
-            <div class="summary-content expanded" id="summaryContent">
-                <div class="summary-content-inner">
-                    <div class="order-totals">
-                        <div class="total-row">
-                            <span>Frete</span>
-                            <span id="mobileShippingCost">GRÁTIS</span>
-                        </div>
-                        <div class="total-row" id="mobileCreditCardFeeRow" style="display: none;">
-                            <span>Acréscimo Cartão</span>
-                            <span style="color: var(--warning-color);" id="mobileCreditCardFee">+R$ 14,99</span>
-                        </div>
-                        <div class="total-row final">
-                            <span>Total</span>
-                            <span id="mobileFinalPrice">...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+.review-price-label {
+    color: #64748b;
+}
 
-        <!-- Barra de Progresso com 3 Etapas (Carrinho fictícia, Entrega, Pagamento) -->
-        <div class="progress-container">
-            <div class="progress-steps">
-                <div class="progress-line" id="progressLine"></div>
-                <!-- Etapa 1: Carrinho (fictícia - sempre concluída) -->
-                <div class="step completed" data-step="1">
-                    <div class="step-circle">✓</div>
-                    <div class="step-label">Carrinho</div>
-                </div>
-                <!-- Etapa 2: Entrega (etapa inicial real) -->
-                <div class="step active" data-step="2">
-                    <div class="step-circle">2</div>
-                    <div class="step-label">Entrega</div>
-                </div>
-                <!-- Etapa 3: Pagamento -->
-                <div class="step" data-step="3">
-                    <div class="step-circle">3</div>
-                    <div class="step-label">Pagamento</div>
-                </div>
-            </div>
-        </div>
+.review-price-value {
+    color: #0f172a;
+    font-weight: 600;
+}
 
-        <main class="main-content">
-            <!-- ETAPA 2: ENTREGA (Etapa inicial real com revelação progressiva) -->
-            <div class="step-content active" id="step2">
-                <h2 class="step-title">Entrega</h2>
-                <p class="step-subtitle">Complete as informações abaixo para continuar</p>
+.review-price-row.total .review-price-value {
+    color: #10b981;
+}
 
-                <form id="deliveryForm">
-                    <!-- Seção 2.1: Dados de Contato (E-mail) -->
+  </style>
+
+ <style>
                     <div class="form-section" id="sectionContact">
                         <h3 class="section-title">Dados de Contato</h3>
                         <div class="form-group">
                             <label class="form-label" for="email">E-mail *</label>
-                            <input type="email" id="email" name="email" class="form-input" required placeholder="seu@email.com">
+                            <input type="email" id="email" name="email" class="form-input" required placeholder="seu@email.com" autocomplete="email">
                             <div class="error-message" id="emailError">Digite um e-mail válido</div>
                         </div>
                     </div>
@@ -622,7 +581,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="phone">Telefone *</label>
-                            <input type="tel" id="phone" name="phone" class="form-input" maxlength="15" required placeholder="(00) 00000-0000" inputmode="numeric">
+                            <input type="tel" id="phone" name="phone" class="form-input" maxlength="15" required placeholder="(00) 00000-0000" inputmode="numeric" autocomplete="tel">
                             <div class="error-message" id="phoneError">Digite um telefone válido</div>
                         </div>
                     </div>
@@ -660,7 +619,7 @@
                         <div class="address-row-number-complement">
                             <div class="form-group">
                                 <label class="form-label" for="number">Número *</label>
-                                <input type="text" id="number" name="number" class="form-input" required>
+                                <input type="text" id="number" name="number" class="form-input" required inputmode="numeric">
                                 <div class="error-message" id="numberError">Digite o número</div>
                             </div>
                             <div class="form-group">
@@ -679,323 +638,9 @@
                             <div class="error-message" id="cpfError">Digite um CPF válido</div>
                         </div>
                     </div>
-
-                    <!-- Seção 2.8: Botão de Continuidade (revelado após CPF válido) -->
-                    <div class="button-group hidden" id="sectionButton">
-                        <button type="submit" class="btn btn-primary btn-full" id="btnContinuePayment" disabled>
-                            Prosseguir para o pagamento
-                        </button>
-                    </div>
-
-                    <!-- Botão Continuar Fictício (sempre visível até o botão real aparecer) -->
-                    <div class="button-group" id="sectionContinueButton">
-                        <button type="button" class="btn btn-primary btn-full btn-continue-fictitious" id="btnContinueFictitious">
-                            Continuar
-                        </button>
-                    </div>
                 </form>
             </div>
-
-            <!-- ETAPA 3: PAGAMENTO -->
-            <div class="step-content" id="step3">
-                <h2 class="step-title">Resumo e Pagamento</h2>
-                <p class="step-subtitle">Escolha como deseja pagar seu pedido</p>
-
-                <!-- Seção Revisar Dados (Recolhível) -->
-                <div class="review-section expanded" id="reviewSection">
-                    <div class="review-header" onclick="toggleReviewSection()">
-                        <div class="review-title">
-                            <span>✓</span> Resumo das Informações
-                        </div>
-                        <span class="review-toggle-icon">▼</span>
-                    </div>
-                    <div class="review-content">
-                        <div class="review-grid">
-                            <!-- Seção Dados Pessoais -->
-                            <div class="review-section-group">
-                                <div class="review-section-title">Dados Pessoais</div>
-                            </div>
-                            <div>
-                                <div class="review-item-label">Nome</div>
-                                <div class="review-item-value" id="reviewName">-</div>
-                            </div>
-                            <div>
-                                <div class="review-item-label">E-mail</div>
-                                <div class="review-item-value" id="reviewEmail">-</div>
-                            </div>
-                            <div>
-                                <div class="review-item-label">Telefone</div>
-                                <div class="review-item-value" id="reviewPhone">-</div>
-                            </div>
-                            <div>
-                                <div class="review-item-label">CPF</div>
-                                <div class="review-item-value" id="reviewCpf">-</div>
-                            </div>
-                            
-
-                        </div>
-                    </div>
-                </div>
-
-             <!-- Seção Produtos do Pedido -->
-<div class="review-section-group" style="margin-top: 8px;" id="reviewProductsGroup">
-    <div class="review-section-title" style="text-align: center;">Resumo do Pedido</div>
-</div>
-<div style="grid-column: 1 / -1;" id="reviewProductsContainer">
-
-	<!-- DIVISOR -->
-<div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
-	
-    <!-- Bloco de produtos -->
-    <div id="reviewProductsList" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:12px;"></div>
-    
-    <!-- Bloco de totais e entrega -->
-    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;">
-            <span style="font-size:13px;color:#64748b;">Subtotal</span>
-            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewSubtotal">-</span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;">
-            <span style="font-size:13px;color:#64748b;">Frete</span>
-            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingPrice">-</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e5e7eb;">
-            <span style="font-size:13px;color:#64748b;">Tipo de Entrega</span>
-            <span style="font-size:13px;font-weight:600;color:#0f172a;" id="reviewShippingMethod">-</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding-top:8px;">
-            <span style="font-size:14px;font-weight:700;color:#0f172a;">Total</span>
-            <span style="font-size:16px;font-weight:700;color:#10b981;" id="reviewTotalPrice">-</span>
-        </div>
-    </div>
-</div>
-
-<div style="margin-bottom: 32px;"></div>
-
-				<!-- Bloco de Endereço de Entrega (Movido para cá) -->
-    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid #e5e7eb;">
-            <span style="color:#10b981; font-size: 16px;">📍</span>
-            <span style="font-size:13px; font-weight:600; color:#334155;">Endereço de Entrega</span>
-        </div>
-        <div class="review-item-value" id="reviewAddress" style="font-size:13px; color:#0f172a; line-height:1.5; margin-bottom:12px;">-</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #e5e7eb;">
-            <span style="font-size:12px;color:#64748b;font-weight:500;">Prazo Estimado</span>
-            <span style="font-size:13px;font-weight:600;color:#10b981;" id="reviewShippingTime">-</span>
-        </div>
-    </div>
-
-				<!-- DIVISOR -->
-<div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
-              
-                <form id="paymentForm">
-
-					<div class="payment-method selected" data-payment="pix">
-                        <div class="payment-header">
-                            <div class="payment-radio"></div>
-                            <div class="payment-info">
-                                <h4>PIX</h4>
-                                <p>Aprovação imediata</p>
-                            </div>
-                        </div>
-                        <div class="payment-form">
-                            <div class="pix-container">
-                                <div style="font-size: 16px; margin-bottom: 8px;">Valor:</div>
-                                <div style="font-size: 24px; font-weight: 700;" id="pixValue">...</div>
-                                <div style="font-size: 12px; color: var(--gray-600); margin-top: 8px;">
-                                    Após finalizar, você receberá o código PIX para pagamento
-                                </div>
-                                
-                                <div id="pixPaymentDetails" style="display: none;">
-                                    <div class="pix-qr-code" id="pixQrCode">
-                                    </div>
-                                    
-                                    <div class="pix-code-container">
-                                        <div class="pix-code-label">Código PIX Copia e Cola:</div>
-                                        <div class="pix-code-text" id="pixCodeText">
-                                        </div>
-                                        <button type="button" class="pix-copy-button" id="pixCopyButton" onclick="copyPixCode()">
-                                            Copiar Código
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="pix-instructions">
-                                        <strong>Como pagar:</strong><br>
-                                        1. Abra o app do seu banco<br>
-                                        2. Escolha a opção PIX<br>
-                                        3. Escaneie o QR Code ou cole o código<br>
-                                        4. Confirme o pagamento
-                                    </div>
-                                    
-                                    <div class="pix-timer" id="pixTimer">
-                                        Código expira em: <span id="pixTimeRemaining">15:00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-					
-                    <div class="payment-method" data-payment="credit">
-                        <div class="payment-header">
-                            <div class="payment-radio"></div>
-                            <div class="payment-info">
-                                <h4>Cartão de Crédito</h4>
-                                <p>Visa, Mastercard, Elo, American Express</p>
-                            </div>
-                        </div>
-                        <div class="payment-form">
-                            <div class="card-brands">
-                                <div class="card-brand">VISA</div>
-                                <div class="card-brand">MASTER</div>
-                                <div class="card-brand">ELO</div>
-                                <div class="card-brand">AMEX</div>
-                            </div>
-                            
-                            <div id="creditCardNotice" style="background: #fef3cd; border: 1px solid #fbbf24; border-radius: 8px; padding: 12px; margin-bottom: 16px; display: block;">
-                                <div style="font-size: 12px; color: #92400e; text-align: center;">
-                                    <strong>Descontos não aplicados para pagamentos com cartão</strong><br>
-                                    Valor com Cartão: <span id="creditCardTotalValue" style="font-weight: 700;">R$ 314,90</span>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="cardNumber">Número do Cartão *</label>
-                                <input type="text" id="cardNumber" name="cardNumber" class="form-input" maxlength="19" required>
-                                <div class="error-message" id="cardNumberError">Digite o número do cartão</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="cardName">Nome no Cartão *</label>
-                                <input type="text" id="cardName" name="cardName" class="form-input" required>
-                                <div class="error-message" id="cardNameError">Digite o nome no cartão</div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label" for="cardExpiry">Validade *</label>
-                                    <input type="text" id="cardExpiry" name="cardExpiry" class="form-input" placeholder="MM/AA" maxlength="5" required>
-                                    <div class="error-message" id="cardExpiryError">Digite a validade</div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="cardCvv">CVV *</label>
-                                    <input type="text" id="cardCvv" name="cardCvv" class="form-input" maxlength="4" required>
-                                    <div class="error-message" id="cardCvvError">Digite o CVV</div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="installments">Parcelas *</label>
-                                <select id="installments" name="installments" class="form-input" required>
-                                    <option value="">Selecione as parcelas</option>
-                                    <option value="1">1x R$ 299,90 à vista</option>
-                                    <option value="2">2x R$ 149,95 sem juros</option>
-                                    <option value="3">3x R$ 99,97 sem juros</option>
-                                    <option value="4">4x R$ 74,98 sem juros</option>
-                                    <option value="5">5x R$ 59,98 sem juros</option>
-                                    <option value="6">6x R$ 49,98 sem juros</option>
-                                    <option value="7">7x R$ 45,70 com juros</option>
-                                    <option value="8">8x R$ 40,89 com juros</option>
-                                    <option value="9">9x R$ 37,21 com juros</option>
-                                    <option value="10">10x R$ 34,29 com juros</option>
-                                    <option value="11">11x R$ 31,90 com juros</option>
-                                    <option value="12">12x R$ 29,99 com juros</option>
-                                </select>
-                                <div class="error-message" id="installmentsError">Selecione as parcelas</div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="payment-method" data-payment="boleto">
-                        <div class="payment-header">
-                            <div class="payment-radio"></div>
-                            <div class="payment-info">
-                                <h4>Cartão de Crédito</h4>
-                                <p>Visa, Mastercard, Elo, American Express</p>
-                            </div>
-                        </div>
-                        <div class="payment-form">
-                            <div id="creditCardNotice" style="background: #fef3cd; border: 1px solid #fbbf24; border-radius: 8px; padding: 12px; margin-bottom: 16px; display: block;">
-                                <div style="font-size: 12px; color: #92400e; text-align: center;">
-                                    <strong>Descontos não aplicados para pagamentos com cartão</strong><br>
-                                    Valor com Cartão: <span id="creditCardTotalValue" style="font-weight: 700;">R$ 314,90</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="button-group">
-    <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
-        Voltar
-    </button>
-    <button type="submit" class="btn btn-primary" id="submitButton">
-        Pagar Agora
-    </button>
-</div>
-                </form>
-            </div>
-        </main>
-
-        <aside class="sidebar">
-            <h3 class="order-summary-title">Resumo do Pedido</h3>
-
-         <!-- SEÇÃO DE PRODUTOS -->
-<div class="products-list" id="productsList">
-    <!-- Os produtos serão inseridos aqui via JavaScript -->
-</div>
-
-<!-- Endereço de Entrega na Sidebar -->
-<div id="sidebarAddressContainer" style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; display: none;">
-    <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
-        <span style="color: #10b981;">📍</span> Entregar em:
-    </div>
-    <div id="sidebarAddressValue" style="font-size: 12px; color: #1e293b; line-height: 1.4;">-</div>
-</div>
-
-<!-- DIVISOR -->
-<div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
-
-            
-            <div class="order-totals">
-                <div class="total-row">
-                    <span>Frete</span>
-                    <span id="shippingCost">GRÁTIS</span>
-                </div>
-                <div class="total-row" id="creditCardFeeRow" style="display: none;">
-                    <span>Acréscimo Cartão</span>
-                    <span style="color: var(--warning-color);" id="creditCardFee">+R$ 14,99</span>
-                </div>
-                <div class="total-row final">
-                    <span>Total</span>
-                    <span id="totalPrice">...</span>
-                </div>
-            </div>
-
-            <div class="discount-code">
-                <label class="form-label">Cupom de Desconto</label>
-                <div class="discount-input">
-                    <input type="text" placeholder="Digite seu cupom" id="discountInput">
-                    <button type="button" onclick="applyCoupon()">Aplicar</button>
-                </div>
-            </div>
-
-            <div class="trust-badges">
-                <div class="trust-badge">
-                    <div class="trust-icon">✓</div>
-                    <span>Compra 100% segura</span>
-                </div>
-                <div class="trust-badge">
-                    <div class="trust-icon">✓</div>
-                    <span>Frete grátis acima de R$ 99</span>
-                </div>
-                <div class="trust-badge">
-                    <div class="trust-icon">✓</div>
-                    <span>7 dias para troca</span>
-                </div>
-            </div>
-        </aside>
-
-        <div class="mobile-padding"></div>
     </div>
 
     <div class="loading-overlay" id="loadingOverlay">
@@ -1264,38 +909,61 @@
       });
     });
 
-    const target = document.getElementById('sectionPersonalData');
-    if (target) {
-      observer.observe(target, { attributes: true });
+    const sectionPersonalData = document.getElementById('sectionPersonalData');
+    if (sectionPersonalData) {
+      observer.observe(sectionPersonalData, { attributes: true });
     }
   </script>
 
-  <script>
-    // ========================================
-    // LÓGICA DE HABILITAÇÃO/DESABILITAÇÃO DO BOTÃO
-    // ========================================
-    
-    /**
-     * Função para atualizar o estado do botão de pagamento
-     * O botão só fica habilitado quando PIX está selecionado
-     */
-    function updatePaymentButtonState() {
-        const paymentForm = document.getElementById('paymentForm');
-        const submitButton = document.getElementById('submitButton');
-        
-        // Encontra o método de pagamento selecionado
-        const selectedPaymentMethod = paymentForm.querySelector('.payment-method.selected');
-        const selectedPaymentType = selectedPaymentMethod ? selectedPaymentMethod.getAttribute('data-payment') : null;
-        
-        // Desabilita o botão se não for PIX
-        if (selectedPaymentType !== 'pix') {
-            submitButton.disabled = true;
-            submitButton.title = 'Selecione PIX para continuar'; // Dica ao passar o mouse
-        } else {
-            submitButton.disabled = false;
-            submitButton.title = ''; // Remove a dica
-        }
-    }
+	  <!-- Script para fechar o teclado em campos específicos -->
+	  <script>
+	    // Função para fechar o teclado no campo de e-mail quando ".com" é digitado
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const emailInput = document.getElementById('email');
+	        
+	        if (emailInput) {
+	            emailInput.addEventListener('input', function(e) {
+	                const value = this.value.toLowerCase();
+	                
+	                // Fecha o teclado se o e-mail contém ".com"
+	                if (value.includes('.com')) {
+	                    this.blur(); // Remove o foco e esconde o teclado
+	                }
+	            });
+	        }
+	    });
+
+	    // Função para formatar telefone e fechar o teclado automaticamente
+	    document.addEventListener('DOMContentLoaded', function() {
+	        const phoneInput = document.getElementById('phone');
+	        
+	        if (phoneInput) {
+	            phoneInput.addEventListener('input', function(e) {
+	                let value = this.value;
+	                
+	                // Remove tudo que não é número
+	                value = value.replace(/\D/g, '');
+	                
+	                // Limita a 11 dígitos (2 de DDD + 9 do número)
+	                value = value.substring(0, 11);
+	                
+	                // Aplica a máscara: (XX) XXXXX-XXXX
+	                if (value.length > 7) {
+	                    value = value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+	                } else if (value.length > 2) {
+	                    value = value.replace(/(\d{2})(\d+)/, "($1) $2");
+	                }
+	                
+	                this.value = value;
+	                
+	                // FECHA O TECLADO: Se o telefone estiver completo (15 caracteres com a máscara)
+	                if (this.value.length === 15) {
+	                    this.blur(); // Remove o foco e esconde o teclado
+	                }
+	            });
+	        }
+	    });
+	  </script>
 
     /**
      * Adiciona listeners aos métodos de pagamento
