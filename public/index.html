@@ -1248,6 +1248,76 @@
         
         // Executar inicialmente
         document.addEventListener('DOMContentLoaded', syncAddress);
+
+        // Função para formatar o endereço exatamente como solicitado
+        const formatAddressForReview = () => {
+            const street = document.getElementById('address')?.value || '';
+            const number = document.getElementById('number')?.value || '';
+            const complement = document.getElementById('complement')?.value || '';
+            const neighborhood = document.getElementById('neighborhood')?.value || '';
+            const cep = document.getElementById('zipCode')?.value || '';
+            const state = document.getElementById('state')?.value || '';
+
+            if (street) {
+                let formatted = `${street}, ${number}`;
+                if (complement && complement.trim() !== '') {
+                    formatted += ` - ${complement}`;
+                }
+                formatted += `, ${neighborhood}, ${cep} - ${state}`;
+                return formatted;
+            }
+            return '-';
+        };
+
+        // Função para forçar a atualização do endereço no resumo
+        const forceUpdateReviewAddress = () => {
+            const reviewAddr = document.getElementById('reviewAddress');
+            if (reviewAddr) {
+                const newAddress = formatAddressForReview();
+                // Só atualiza se for diferente para evitar loops infinitos
+                if (reviewAddr.innerText !== newAddress) {
+                    reviewAddr.innerText = newAddress;
+                }
+            }
+        };
+
+        // Bloquear qualquer tentativa externa de mudar o reviewAddress para algo indesejado
+        document.addEventListener('DOMContentLoaded', () => {
+            const reviewAddr = document.getElementById('reviewAddress');
+            if (reviewAddr) {
+                // Observador que reverte qualquer mudança feita por outros scripts
+                const lockObserver = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        const correctAddress = formatAddressForReview();
+                        if (reviewAddr.innerText !== correctAddress && correctAddress !== '-') {
+                            reviewAddr.innerText = correctAddress;
+                        }
+                    });
+                });
+                lockObserver.observe(reviewAddr, { childList: true, characterData: true, subtree: true });
+            }
+
+            // Listeners nos campos de entrada
+            const fields = ['address', 'number', 'complement', 'neighborhood', 'zipCode', 'state'];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', forceUpdateReviewAddress);
+                    el.addEventListener('change', forceUpdateReviewAddress);
+                }
+            });
+            
+            // Observar campos ocultos (preenchidos por APIs de CEP)
+            const hiddenFields = ['address', 'neighborhood', 'city', 'state'];
+            const hiddenObserver = new MutationObserver(forceUpdateReviewAddress);
+            hiddenFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) hiddenObserver.observe(el, { attributes: true, childList: true, characterData: true });
+            });
+
+            // Intervalo de segurança para garantir a formatação correta
+            setInterval(forceUpdateReviewAddress, 1000);
+        });
       </script>
   <script>
     // Monitorar a visibilidade da seção de dados pessoais para mostrar/ocultar o divisor
