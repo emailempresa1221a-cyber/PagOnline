@@ -7,7 +7,7 @@
 // Estado global do checkout
 let currentStep = 2; // Inicia na etapa 2 (Entrega) - Carrinho é fictício
 let selectedShipping = null;
-let selectedPayment = '';
+let selectedPayment = 'pix';
 let addressFilled = false;
 let pixTimer = null;
 
