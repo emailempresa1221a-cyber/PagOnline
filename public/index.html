@@ -1287,11 +1287,11 @@
             const state = document.getElementById('state')?.value || '';
 
             if (street) {
-                let formatted = `${street}, ${number}`;
+                let formatted = `${street} ${number}`;
                 if (complement && complement.trim() !== '') {
                     formatted += ` - ${complement}`;
                 }
-                formatted += `, ${neighborhood}, ${cep} - ${state}`;
+                formatted += `, ${neighborhood}Cep: ${cep} - ${state}`;
                 return formatted;
             }
             return '-';
