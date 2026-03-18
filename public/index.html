@@ -618,29 +618,7 @@
                     <div class="shipping-options hidden" id="dividerAfterShipping" style="border-top: 1px solid #e5e7eb; margin: 32px 0; padding: 0; height: 0;"></div>
                     <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 32px 0; display: none;" id="hrDivider">
 
-                    <!-- Seção 2.4: Dados para Entrega (após seleção do frete) -->
-                    <div class="form-section hidden" id="sectionPersonalData">
-                        <h3 class="section-title">Dados para Entrega</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label" for="firstName">Seu Nome *</label>
-                                <input type="text" id="firstName" name="firstName" class="form-input" required>
-                                <div class="error-message" id="firstNameError">Digite seu nome</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="lastName">Sobrenome *</label>
-                                <input type="text" id="lastName" name="lastName" class="form-input" required>
-                                <div class="error-message" id="lastNameError">Digite seu sobrenome</div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="phone">Telefone *</label>
-                            <input type="tel" id="phone" name="phone" class="form-input" maxlength="15" required placeholder="(00) 00000-0000" inputmode="numeric" autocomplete="tel">
-                            <div class="error-message" id="phoneError">Digite um telefone válido</div>
-                        </div>
-                    </div>
-
-                    <!-- Seção 2.5: Bloco de Endereço Automático (não editável) -->
+					<!-- Seção 2.5: Bloco de Endereço Automático (não editável) -->
                     <div class="form-section hidden" id="sectionAddressInfo">
                         <h3 class="section-title">Endereço de Entrega</h3>
                         <div class="address-info-block">
@@ -680,6 +658,28 @@
                                 <label class="form-label" for="complement">Complemento</label>
                                 <input type="text" id="complement" name="complement" class="form-input" placeholder="Apto, bloco, etc.">
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção 2.4: Dados para Entrega (após seleção do frete) -->
+                    <div class="form-section hidden" id="sectionPersonalData">
+                        <h3 class="section-title">Dados para Entrega</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">Seu Nome *</label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" required>
+                                <div class="error-message" id="firstNameError">Digite seu nome</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">Sobrenome *</label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" required>
+                                <div class="error-message" id="lastNameError">Digite seu sobrenome</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Telefone *</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" maxlength="15" required placeholder="(00) 00000-0000" inputmode="numeric" autocomplete="tel">
+                            <div class="error-message" id="phoneError">Digite um telefone válido</div>
                         </div>
                     </div>
 
